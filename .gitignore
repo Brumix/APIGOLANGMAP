@@ -1,0 +1,10 @@
+.idea
+main
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
