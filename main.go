@@ -1,7 +1,7 @@
 package main
 
 import (
-	"APIGOLANGMAP/model"
+	"APIGOLANGMAP/models"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
 
@@ -14,10 +14,13 @@ import (
 
 var identityKey = "id"
 
+const AdminAccess = true
+const UserAccess = false
+
 func init() {
 	services.OpenDatabase()
-	services.Db.AutoMigrate(&model.Evaluation{})
-	services.Db.AutoMigrate(&model.User{})
+	services.Db.AutoMigrate(&models.Evaluation{})
+	services.Db.AutoMigrate(&models.User{})
 
 }
 
@@ -40,7 +43,7 @@ func main() {
 	})
 
 	evaluation := router.Group("/api/v1/evaluation")
-	evaluation.Use(services.AuthorizationRequired())
+	evaluation.Use(services.AuthorizationRequired(AdminAccess)) // admin just to test
 	{
 		evaluation.POST("/", routes.AddEvaluation)
 		evaluation.GET("/", routes.GetAllEvaluation)
@@ -49,11 +52,19 @@ func main() {
 		evaluation.DELETE("/:id", routes.DeleteEvaluation)
 	}
 
+	/* localization := router.Group("/api/v1/localization")
+	localization.Use(services.AuthorizationRequired(AdminAccess))
+	{
+		localization.GET("/", routes.GetAllLocalizations)
+		localization.GET("/:id", routes.GetLocalizationById)
+		localization.GET("/:id", routes.GetLocalizationUsersByFilter)
+	} */
+
 	auth := router.Group("/api/v1/auth")
 	{
 		auth.POST("/login", routes.GenerateToken)
 		auth.POST("/register", routes.RegisterUser)
-		auth.PUT("/refresh_token", services.AuthorizationRequired(), routes.RefreshToken)
+		auth.PUT("/refresh_token", services.AuthorizationRequired(UserAccess), routes.RefreshToken)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

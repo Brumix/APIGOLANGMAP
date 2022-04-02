@@ -11,8 +11,8 @@ import (
 // @Accept  json
 // @Produce  json
 // @Router /auth/register [post]
-// @Param evaluation body model.User true "Do register"
-// @Success 201 {object} model.Claims
+// @Param evaluation body models.User true "Do register"
+// @Success 201 {object} models.Claims
 // @Failure 400 "Bad request"
 // @Failure 401 "Unauthorized"
 func RegisterUser(c *gin.Context) {
@@ -24,8 +24,8 @@ func RegisterUser(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Router /auth/login [post]
-// @Param evaluation body model.User true "Do login"
-// @Success 200 {object} model.Claims
+// @Param evaluation body models.User true "Do login"
+// @Success 200 {object} models.Claims
 // @Failure 400 "Bad request"
 // @Failure 401 "Unauthorized"
 func GenerateToken(c *gin.Context) {
@@ -38,7 +38,7 @@ func GenerateToken(c *gin.Context) {
 // @Produce  json
 // @Router /auth/refresh_token [put]
 // @param Authorization header string true "Token"
-// @Success 200 {object} model.Claims
+// @Success 200 {object} models.Claims
 // @Failure 400 "Bad request"
 // @Failure 401 "Unauthorized"
 func RefreshToken(c *gin.Context) {

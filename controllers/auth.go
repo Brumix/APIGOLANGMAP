@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"APIGOLANGMAP/model"
+	"APIGOLANGMAP/models"
 	"APIGOLANGMAP/services"
 	"net/http"
 
@@ -20,8 +20,8 @@ func CheckPasswordHash(password, hash string) bool {
 }
 
 func LoginHandler(c *gin.Context) {
-	var creds model.User
-	var usr model.User
+	var creds models.User
+	var usr models.User
 
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
@@ -44,7 +44,7 @@ func LoginHandler(c *gin.Context) {
 }
 
 func RegisterHandler(c *gin.Context) {
-	var creds model.User
+	var creds models.User
 
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
@@ -64,7 +64,7 @@ func RegisterHandler(c *gin.Context) {
 
 func RefreshHandler(c *gin.Context) {
 
-	user := model.User{
+	user := models.User{
 		Username: c.GetHeader("username"),
 	}
 
