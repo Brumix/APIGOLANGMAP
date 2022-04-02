@@ -22,7 +22,7 @@ func init() {
 }
 
 func main() {
-	//teste do git
+
 	services.FormatSwagger()
 
 	// Creates a gin router with default middleware:
