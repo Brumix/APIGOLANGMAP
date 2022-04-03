@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthorizationRequired(accessMode bool) gin.HandlerFunc {
+func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		if !ValidateTokenJWT(c, accessMode) {
+		if !ValidateTokenJWT(c, adminAccess) {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Not authorized"})
 			c.Abort()
 		} else {

@@ -34,7 +34,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token := services.GenerateTokenJWT(creds)
+	token := services.GenerateTokenJWT(usr)
 
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Access denied!"})
@@ -64,11 +64,12 @@ func RegisterHandler(c *gin.Context) {
 
 func RefreshHandler(c *gin.Context) {
 
-	user := models.User{
-		Username: c.GetHeader("username"),
-	}
+	var usr models.User
 
-	token := services.GenerateTokenJWT(user)
+	services.OpenDatabase()
+	services.Db.Find(&usr, "username = ?", c.GetHeader("username"))
+
+	token := services.GenerateTokenJWT(usr)
 
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Acesso não autorizado"})

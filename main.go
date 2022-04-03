@@ -14,14 +14,14 @@ import (
 
 var identityKey = "id"
 
+const UserAccess  = false
 const AdminAccess = true
-const UserAccess = false
 
 func init() {
 	services.OpenDatabase()
 	services.Db.AutoMigrate(&models.Evaluation{})
 	services.Db.AutoMigrate(&models.User{})
-
+	services.CreateAdmin()
 }
 
 func main() {
@@ -43,7 +43,7 @@ func main() {
 	})
 
 	evaluation := router.Group("/api/v1/evaluation")
-	evaluation.Use(services.AuthorizationRequired(AdminAccess)) // admin just to test
+	evaluation.Use(services.AuthorizationRequired(AdminAccess)) // admin just to test who can access this route
 	{
 		evaluation.POST("/", routes.AddEvaluation)
 		evaluation.GET("/", routes.GetAllEvaluation)

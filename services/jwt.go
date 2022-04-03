@@ -2,7 +2,6 @@ package services
 
 import (
 	"APIGOLANGMAP/models"
-	"fmt"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -28,10 +27,9 @@ func GenerateTokenJWT(credentials models.User) string {
 	expirationTime := time.Now().Add(15 * time.Minute)
 
 	// Create the JWT claims, which includes the username and expiry time
-	fmt.Print(credentials.Admin)
 	claims := &models.Claims{
 		Username: credentials.Username,
-		Admin: credentials.Admin,
+		AccessMode: credentials.AccessMode,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),
@@ -71,7 +69,7 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 		}
 	}
 
-	return ! (admin && claims.Admin != admin)
+	return ! (admin && claims.IsAdmin() != admin)
 }
 
 func getAuthorizationToken(c *gin.Context) (string, bool, bool) {

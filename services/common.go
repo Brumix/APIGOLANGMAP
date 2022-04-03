@@ -1,6 +1,8 @@
 package services
 
 import (
+	"APIGOLANGMAP/models"
+	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"strings"
 
@@ -40,5 +42,29 @@ func OpenDatabase() {
 	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
+	}
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CreateAdmin() {
+	var usr models.User
+	if Db.Find(&usr, "username = ?", "admin"); usr.Username != "" { return }
+
+	creds := models.User {
+		Username: "admin",
+		Password: "admin",
+		AccessMode: models.AdminAccess,
+	}
+
+	hash, _ := HashPassword(creds.Password)
+
+	creds.Password = hash
+	result := Db.Save(&creds)
+	if result.RowsAffected == 0 {
+		panic("Admin could not be created")
 	}
 }
