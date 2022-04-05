@@ -18,7 +18,8 @@ func init() {
 	services.OpenDatabase()
 	services.Db.AutoMigrate(&model.Evaluation{})
 	services.Db.AutoMigrate(&model.User{})
-
+	services.Db.AutoMigrate(&model.Position{})
+	services.Db.AutoMigrate(&model.Follower{})
 }
 
 func main() {
