@@ -34,7 +34,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token := services.GenerateTokenJWT(creds)
+	token := services.GenerateTokenJWT(usr)
 
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Access denied!"})
