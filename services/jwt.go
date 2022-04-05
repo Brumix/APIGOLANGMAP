@@ -25,11 +25,15 @@ func GetSecretKey() []byte {
 
 func GenerateTokenJWT(credentials model.User) string {
 	// Set expiration time of the token
-	expirationTime := time.Now().Add(15 * time.Minute)
+	// 43800 is the duration of a month in minutes
+	expirationTime := time.Now().Add(43800 * time.Minute)
 
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &model.Claims{
 		Username: credentials.Username,
+		IsAdmin:  credentials.IsAdmin,
+		UserID:   credentials.ID,
+
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),
