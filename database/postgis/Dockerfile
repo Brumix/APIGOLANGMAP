@@ -1,4 +1,4 @@
-FROM postgres
+FROM postgis/postgis
 
 ENV PORT=5432
 
@@ -11,7 +11,8 @@ COPY ./database.sql /docker-entrypoint-initdb.d/
 
 
 #COMAND TO BUILD THE DOCKER IMAGE
-#docker build -t apidb ./database/
+#docker build -t apidb ./database/postgis/
 
 #COMAND TO CREATE THE CONTAINER
 #docker run -p5444:5432 -it --rm apidb
+

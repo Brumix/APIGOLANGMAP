@@ -2,14 +2,13 @@ package main
 
 import (
 	"APIGOLANGMAP/model"
+	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
-
 	"github.com/gin-gonic/gin"
-	_ "gorm.io/driver/postgres"
-
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "gorm.io/driver/postgres"
 )
 
 var identityKey = "id"
@@ -20,6 +19,8 @@ func init() {
 	services.Db.AutoMigrate(&model.User{})
 	services.Db.AutoMigrate(&model.Position{})
 	services.Db.AutoMigrate(&model.Follower{})
+	repository.GetDataBase(services.Db)
+	services.SecurityConcurrent()
 }
 
 func main() {
@@ -55,6 +56,12 @@ func main() {
 		auth.POST("/login", routes.GenerateToken)
 		auth.POST("/register", routes.RegisterUser)
 		auth.PUT("/refresh_token", services.AuthorizationRequired(), routes.RefreshToken)
+	}
+
+	position := router.Group("/api/v1/position")
+	{
+		position.POST("/", routes.RegisterLocation)
+
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
