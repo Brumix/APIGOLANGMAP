@@ -20,7 +20,7 @@ func init() {
 	services.Db.AutoMigrate(&model.Position{})
 	services.Db.AutoMigrate(&model.Follower{})
 	repository.GetDataBase(services.Db)
-	services.SecurityConcurrent()
+	//services.SecurityConcurrent()
 }
 
 func main() {
@@ -61,6 +61,7 @@ func main() {
 	position := router.Group("/api/v1/position")
 	{
 		position.POST("/", routes.RegisterLocation)
+		position.DELETE("/", routes.DeleteLocation)
 
 	}
 
