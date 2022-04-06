@@ -13,7 +13,7 @@ import (
 // @Security BearerAuth
 // @param Authorization header string true "Token"
 // @Success 200 {array} model.Follower
-// @Router /followers [get]
+// @Router /follower [get]
 // @Failure 404 "Not found"
 func GetAllFollowers(c *gin.Context) {
 	controllers.GetAllFollowers(c)

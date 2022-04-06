@@ -5,7 +5,6 @@ import (
 	"APIGOLANGMAP/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 func FetchAllFollowers(userID uint) []model.Follower {
@@ -17,7 +16,7 @@ func FetchAllFollowers(userID uint) []model.Follower {
 }
 
 func GetAllFollowers(c *gin.Context) {
-	userID, err := c.Get("user_id")
+	userID, err := c.Get("userid")
 
 	if err == false {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Auth Token Malformed!"})
@@ -34,9 +33,9 @@ func GetAllFollowers(c *gin.Context) {
 }
 
 func AssociateFollower(c *gin.Context) {
-	userID, err_auth := c.Get("user_id")
+	userID, errAuth := c.Get("userid")
 
-	if err_auth != false {
+	if errAuth == false {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Auth Token Malformed!"})
 		return
 	}
@@ -49,6 +48,12 @@ func AssociateFollower(c *gin.Context) {
 	}
 
 	follower.UserID = userID.(uint)
+	// Falta verificar se o follower user id existe!
+	var user model.User
+	if err := services.Db.Where("id = ?", follower.FollowerUserID).First(&user).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Follower User ID Not Found"})
+		return
+	}
 
 	services.Db.Save(&follower)
 
@@ -59,23 +64,21 @@ func AssociateFollower(c *gin.Context) {
 }
 
 func DeassociateFollower(c *gin.Context) {
-	userID, err_auth := c.Get("user_id")
+	userID, errAuth := c.Get("userid")
 
-	if err_auth == false {
+	if errAuth == false {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Auth Token Malformed!"})
 		return
 	}
 
 	var follower model.Follower
-
-	followerUserID, err_conv := strconv.ParseUint(c.Param("id"), 10, 64)
-
-	if err_conv != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Follower ID Must be an Integer."})
+	if err := c.ShouldBindJSON(&follower); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
 		return
 	}
 
-	services.Db.Where(&model.Follower{UserID: userID.(uint), FollowerUserID: uint(followerUserID)}).First(&follower)
+	follower.UserID = userID.(uint)
+	services.Db.Where(&model.Follower{UserID: follower.UserID, FollowerUserID: follower.FollowerUserID}).First(&follower)
 
 	if follower.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "None found!"})
