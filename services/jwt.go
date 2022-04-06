@@ -23,6 +23,22 @@ func GetSecretKey() []byte {
 	return []byte(secretKey)
 }
 
+func GetUsernameFromTokenJWT(c *gin.Context) string {
+	token, _, _ := getAuthorizationToken(c)
+
+	claims := &models.Claims{}
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return JwtKey, nil
+	})
+
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return ""
+		}
+	}
+	return claims.Username
+}
+
 func GenerateTokenJWT(credentials models.User) string {
 	// Set expiration time of the token
 	expirationTime := time.Now().Add(15 * time.Minute)
@@ -42,6 +58,34 @@ func GenerateTokenJWT(credentials models.User) string {
 	tokenString, err := token.SignedString(JwtKey)
 
 	if err != nil {
+		return ""
+	}
+	return tokenString
+}
+
+func InvalidateTokenJWT(c *gin.Context) string {
+	token, _, _ := getAuthorizationToken(c)
+
+	claims := &models.Claims{}
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return JwtKey, nil
+	})
+
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return ""
+		}
+	}
+
+	if tkn != nil {
+		if !tkn.Valid {
+			return ""
+		}
+	}
+
+	// Create the JWT string
+	tokenString, errTkn := tkn.SignedString(JwtKey)
+	if errTkn != nil {
 		return ""
 	}
 	return tokenString
@@ -69,6 +113,16 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 			return false
 		}
 	}
+
+	// Create the JWT string
+	tokenString, errTkn := tkn.SignedString(JwtKey)
+	if errTkn != nil {
+		return false
+	}
+
+	// Check if token is revoked
+	var revokedTkn models.RevokedToken
+	if  Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" { return false }
 
 	return ! (admin && claims.IsAdmin() != admin)
 }
