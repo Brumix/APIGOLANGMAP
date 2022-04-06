@@ -5,6 +5,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"strings"
+	"time"
 
 	postgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -40,6 +41,10 @@ func OpenDatabase() {
 
 	dsn := "host=" + dbHost + " user=" + username + " password=" + password + " dbname=" + dbName + " port=" + dbPort + " sslmode=disable TimeZone=Europe/Lisbon"
 	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	sqlDB, _ := Db.DB()
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 	if err != nil {
 		panic("failed to connect database")
 	}

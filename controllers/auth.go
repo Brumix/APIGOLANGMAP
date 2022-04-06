@@ -67,9 +67,7 @@ func RegisterHandler(c *gin.Context) {
 func RefreshHandler(c *gin.Context) {
 	var usr model.User
 
-	services.OpenDatabase()
 	services.Db.Find(&usr, "username = ?", c.GetString("username"))
-	services.CloseDatabase()
 
 	if usr.Username == "" || !InvalidateToken(c) {
 		c.JSON(http.StatusNotAcceptable, gin.H{"status": http.StatusNotAcceptable, "message": "Cannot be created!"})
@@ -87,9 +85,7 @@ func RefreshHandler(c *gin.Context) {
 func LogoutHandler(c *gin.Context) {
 	var usr model.User
 
-	services.OpenDatabase()
 	services.Db.Find(&usr, "username = ?", c.GetString("username"))
-	services.CloseDatabase()
 
 	if InvalidateToken(c) {
 		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!"})
@@ -106,8 +102,6 @@ func InvalidateToken(c *gin.Context) bool {
 	revoked := model.RevokedToken{
 		Token: token,
 	}
-	services.OpenDatabase()
 	result := services.Db.Save(&revoked)
-	services.CloseDatabase()
 	return result.RowsAffected != 0
 }
