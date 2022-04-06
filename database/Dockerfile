@@ -14,4 +14,4 @@ COPY ./database.sql /docker-entrypoint-initdb.d/
 #docker build -t apidb ./database/
 
 #COMAND TO CREATE THE CONTAINER
-#docker run -p5432:5432 -it --rm apidb
+#docker run -p5444:5432 -it --rm apidb
