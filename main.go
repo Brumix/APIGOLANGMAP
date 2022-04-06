@@ -14,7 +14,7 @@ import (
 
 var identityKey = "id"
 
-const UserAccess  = false
+const UserAccess = false
 const AdminAccess = true
 
 func init() {
@@ -22,6 +22,9 @@ func init() {
 	services.Db.AutoMigrate(&model.Evaluation{})
 	services.Db.AutoMigrate(&model.User{})
 	services.Db.AutoMigrate(&model.RevokedToken{})
+	services.Db.AutoMigrate(&model.Position{})
+	services.Db.AutoMigrate(&model.Follower{})
+
 	services.CreateAdmin()
 }
 

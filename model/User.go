@@ -1,8 +1,9 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"strconv"
+
+	"gorm.io/gorm"
 )
 
 const UserAccess  = 1
@@ -13,6 +14,8 @@ type User struct {
 	Username   string `json:"username" gorm:"unique"`
 	Password   string `json:"password,omitempty"`
 	AccessMode    int `json:"access_mode" gorm:"default:1"`
+	UserFriends   []Follower `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UserPositions []Position `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 func (user User) IsAdmin() bool {
