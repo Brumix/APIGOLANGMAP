@@ -24,8 +24,8 @@ func init() {
 	services.Db.AutoMigrate(&model.RevokedToken{})
 	services.Db.AutoMigrate(&model.Position{})
 	services.Db.AutoMigrate(&model.Follower{})
-
 	services.CreateAdmin()
+	services.CloseDatabase()
 }
 
 func main() {
@@ -67,7 +67,7 @@ func main() {
 	auth := router.Group("/api/v1/auth")
 	{
 		auth.POST("/login", routes.GenerateToken)
-		auth.PUT("/logout", routes.InvalidateToken)
+		auth.POST("/logout", services.AuthorizationRequired(UserAccess), routes.InvalidateToken)
 		auth.POST("/register", routes.RegisterUser)
 		auth.PUT("/refresh_token", services.AuthorizationRequired(UserAccess), routes.RefreshToken)
 	}

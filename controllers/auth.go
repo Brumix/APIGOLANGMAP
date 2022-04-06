@@ -29,6 +29,7 @@ func LoginHandler(c *gin.Context) {
 	}
 	services.OpenDatabase()
 	services.Db.Find(&usr, "username = ?", creds.Username)
+	services.CloseDatabase()
 	if usr.Username == "" || !CheckPasswordHash(creds.Password, usr.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Invalid User!"})
 		return
@@ -55,6 +56,7 @@ func RegisterHandler(c *gin.Context) {
 
 	creds.Password = hash
 	result := services.Db.Save(&creds)
+	services.CloseDatabase()
 	if result.RowsAffected != 0 {
 		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!", "User ID": creds.ID})
 		return
@@ -63,11 +65,11 @@ func RegisterHandler(c *gin.Context) {
 }
 
 func RefreshHandler(c *gin.Context) {
-
 	var usr model.User
 
 	services.OpenDatabase()
-	services.Db.Find(&usr, "username = ?", services.GetUsernameFromTokenJWT(c))
+	services.Db.Find(&usr, "username = ?", c.GetString("username"))
+	services.CloseDatabase()
 
 	if usr.Username == "" || !InvalidateToken(c) {
 		c.JSON(http.StatusNotAcceptable, gin.H{"status": http.StatusNotAcceptable, "message": "Cannot be created!"})
@@ -86,7 +88,8 @@ func LogoutHandler(c *gin.Context) {
 	var usr model.User
 
 	services.OpenDatabase()
-	services.Db.Find(&usr, "username = ?", services.GetUsernameFromTokenJWT(c))
+	services.Db.Find(&usr, "username = ?", c.GetString("username"))
+	services.CloseDatabase()
 
 	if InvalidateToken(c) {
 		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!"})
@@ -105,5 +108,6 @@ func InvalidateToken(c *gin.Context) bool {
 	}
 	services.OpenDatabase()
 	result := services.Db.Save(&revoked)
+	services.CloseDatabase()
 	return result.RowsAffected != 0
 }

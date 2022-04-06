@@ -23,28 +23,13 @@ func GetSecretKey() []byte {
 	return []byte(secretKey)
 }
 
-func GetUsernameFromTokenJWT(c *gin.Context) string {
-	token, _, _ := getAuthorizationToken(c)
-
-	claims := &model.Claims{}
-	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return JwtKey, nil
-	})
-
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			return ""
-		}
-	}
-	return claims.Username
-}
-
 func GenerateTokenJWT(credentials model.User) string {
 	// Set expiration time of the token
 	expirationTime := time.Now().Add(15 * time.Minute)
 
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &model.Claims{
+		UserID:   credentials.ID,
 		Username: credentials.Username,
 		AccessMode: credentials.AccessMode,
 		StandardClaims: jwt.StandardClaims{
@@ -122,7 +107,9 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 
 	// Check if token is revoked
 	var revokedTkn model.RevokedToken
-	if  Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" { return false }
+	OpenDatabase()
+	if  Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" { CloseDatabase(); return false }
+	CloseDatabase()
 
 	return ! (admin && claims.IsAdmin() != admin)
 }

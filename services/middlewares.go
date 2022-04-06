@@ -2,10 +2,9 @@ package services
 
 import (
 	"APIGOLANGMAP/model"
-	"net/http"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
@@ -28,9 +27,9 @@ func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
 
 			if claims, ok := token.Claims.(*model.Claims); ok && token.Valid {
 				//fmt.Printf("%v %v", claims.Username, claims.StandardClaims.ExpiresAt)
+				c.Set("userid", claims.UserID)
 				c.Set("username", claims.Username)
 			}
-			OpenDatabase()
 
 			// before request
 			c.Next()

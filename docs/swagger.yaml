@@ -69,7 +69,7 @@ paths:
           description: Unauthorized
       summary: Atualiza token de autenticação
   /auth/logout:
-    put:
+    post:
       consumes:
         - application/json
       description: Invalida o token de autenticação do usuário

@@ -96,7 +96,7 @@ var doc = `{
             }
         },
         "/auth/logout": {
-            "put": {
+            "post": {
                 "description": "Invalida o token de autenticação do usuário",
                 "consumes": [
                     "application/json"
