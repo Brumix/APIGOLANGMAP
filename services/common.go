@@ -1,8 +1,11 @@
 package services
 
 import (
+	"APIGOLANGMAP/model"
+	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"strings"
+	"time"
 
 	postgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -38,7 +41,44 @@ func OpenDatabase() {
 
 	dsn := "host=" + dbHost + " user=" + username + " password=" + password + " dbname=" + dbName + " port=" + dbPort + " sslmode=disable TimeZone=Europe/Lisbon"
 	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	sqlDB, _ := Db.DB()
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 	if err != nil {
 		panic("failed to connect database")
+	}
+}
+
+func CloseDatabase() {
+	psqlDB, err := Db.DB()
+	psqlDB.Close()
+
+	if err != nil {
+		panic("failed to close database")
+	}
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CreateAdmin() {
+	var usr model.User
+	if Db.Find(&usr, "username = ?", "admin"); usr.Username != "" { return }
+
+	creds := model.User {
+		Username:   "admin",
+		Password:   "admin",
+		AccessMode: model.AdminAccess,
+	}
+
+	hash, _ := HashPassword(creds.Password)
+
+	creds.Password = hash
+	result := Db.Save(&creds)
+	if result.RowsAffected == 0 {
+		panic("Admin could not be created")
 	}
 }

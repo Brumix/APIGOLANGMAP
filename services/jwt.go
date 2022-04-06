@@ -30,10 +30,9 @@ func GenerateTokenJWT(credentials model.User) string {
 
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &model.Claims{
-		Username: credentials.Username,
-		IsAdmin:  credentials.IsAdmin,
-		UserID:   credentials.ID,
-
+		UserID:     credentials.ID,
+		Username:   credentials.Username,
+		AccessMode: credentials.AccessMode,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),
@@ -50,7 +49,35 @@ func GenerateTokenJWT(credentials model.User) string {
 	return tokenString
 }
 
-func ValidateTokenJWT(c *gin.Context) bool {
+func InvalidateTokenJWT(c *gin.Context) string {
+	token, _, _ := getAuthorizationToken(c)
+
+	claims := &model.Claims{}
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return JwtKey, nil
+	})
+
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return ""
+		}
+	}
+
+	if tkn != nil {
+		if !tkn.Valid {
+			return ""
+		}
+	}
+
+	// Create the JWT string
+	tokenString, errTkn := tkn.SignedString(JwtKey)
+	if errTkn != nil {
+		return ""
+	}
+	return tokenString
+}
+
+func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 	token, b, done := getAuthorizationToken(c)
 	if done {
 		return b
@@ -73,7 +100,22 @@ func ValidateTokenJWT(c *gin.Context) bool {
 		}
 	}
 
-	return true
+	// Create the JWT string
+	tokenString, errTkn := tkn.SignedString(JwtKey)
+	if errTkn != nil {
+		return false
+	}
+
+	// Check if token is revoked
+	var revokedTkn model.RevokedToken
+	OpenDatabase()
+	if Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" {
+		CloseDatabase()
+		return false
+	}
+	CloseDatabase()
+
+	return !(admin && claims.IsAdmin() != admin)
 }
 
 func getAuthorizationToken(c *gin.Context) (string, bool, bool) {

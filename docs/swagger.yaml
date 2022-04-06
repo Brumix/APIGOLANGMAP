@@ -68,6 +68,29 @@ paths:
         "401":
           description: Unauthorized
       summary: Atualiza token de autenticação
+  /auth/logout:
+    post:
+      consumes:
+        - application/json
+      description: Invalida o token de autenticação do usuário
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Claims'
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+      summary: Invalida token de autenticação
   /auth/register:
     post:
       consumes:
