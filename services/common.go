@@ -1,7 +1,7 @@
 package services
 
 import (
-	"APIGOLANGMAP/models"
+	"APIGOLANGMAP/model"
 	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"strings"
@@ -51,13 +51,13 @@ func HashPassword(password string) (string, error) {
 }
 
 func CreateAdmin() {
-	var usr models.User
+	var usr model.User
 	if Db.Find(&usr, "username = ?", "admin"); usr.Username != "" { return }
 
-	creds := models.User {
-		Username: "admin",
-		Password: "admin",
-		AccessMode: models.AdminAccess,
+	creds := model.User {
+		Username:   "admin",
+		Password:   "admin",
+		AccessMode: model.AdminAccess,
 	}
 
 	hash, _ := HashPassword(creds.Password)

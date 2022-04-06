@@ -1,7 +1,7 @@
 package services
 
 import (
-	"APIGOLANGMAP/models"
+	"APIGOLANGMAP/model"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -26,7 +26,7 @@ func GetSecretKey() []byte {
 func GetUsernameFromTokenJWT(c *gin.Context) string {
 	token, _, _ := getAuthorizationToken(c)
 
-	claims := &models.Claims{}
+	claims := &model.Claims{}
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return JwtKey, nil
 	})
@@ -39,12 +39,12 @@ func GetUsernameFromTokenJWT(c *gin.Context) string {
 	return claims.Username
 }
 
-func GenerateTokenJWT(credentials models.User) string {
+func GenerateTokenJWT(credentials model.User) string {
 	// Set expiration time of the token
 	expirationTime := time.Now().Add(15 * time.Minute)
 
 	// Create the JWT claims, which includes the username and expiry time
-	claims := &models.Claims{
+	claims := &model.Claims{
 		Username: credentials.Username,
 		AccessMode: credentials.AccessMode,
 		StandardClaims: jwt.StandardClaims{
@@ -66,7 +66,7 @@ func GenerateTokenJWT(credentials models.User) string {
 func InvalidateTokenJWT(c *gin.Context) string {
 	token, _, _ := getAuthorizationToken(c)
 
-	claims := &models.Claims{}
+	claims := &model.Claims{}
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return JwtKey, nil
 	})
@@ -97,7 +97,7 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 		return b
 	}
 
-	claims := &models.Claims{}
+	claims := &model.Claims{}
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return JwtKey, nil
 	})
@@ -121,7 +121,7 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 	}
 
 	// Check if token is revoked
-	var revokedTkn models.RevokedToken
+	var revokedTkn model.RevokedToken
 	if  Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" { return false }
 
 	return ! (admin && claims.IsAdmin() != admin)

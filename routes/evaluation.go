@@ -10,7 +10,7 @@ import (
 // @Description Echo the data sent though the get request.
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} models.Evaluation
+// @Success 200 {array} model.Evaluation
 // @Router /echo [get]
 // @Param name query string false "string valid" minlength(1) maxlength(10)
 // @Failure 404 "Not found"
@@ -24,7 +24,7 @@ func EchoRepeat(c *gin.Context) {
 // @Produce  json
 // @Security BearerAuth
 // @param Authorization header string true "Token"
-// @Success 200 {array} models.Evaluation
+// @Success 200 {array} model.Evaluation
 // @Router /evaluation [get]
 // @Failure 404 "Not found"
 func GetAllEvaluation(c *gin.Context) {
@@ -39,7 +39,7 @@ func GetAllEvaluation(c *gin.Context) {
 // @Security BearerAuth
 // @param Authorization header string true "Token"
 // @Param id path int true "Evaluation ID"
-// @Success 200 {object} models.Evaluation
+// @Success 200 {object} model.Evaluation
 // @Router /evaluation/{id} [get]
 // @Failure 404 "Not found"
 func GetEvaluationById(c *gin.Context) {
@@ -52,10 +52,10 @@ func GetEvaluationById(c *gin.Context) {
 // @Produce  json
 // @Security BearerAuth
 // @param Authorization header string true "Token"
-// @Param evaluation body models.Evaluation true "Udpdate evaluation"
+// @Param evaluation body model.Evaluation true "Udpdate evaluation"
 // @Param id path int true "Evaluation ID"
 // @Router /evaluation/{id} [put]
-// @Success 200 {object} models.Evaluation
+// @Success 200 {object} model.Evaluation
 // @Failure 400 "Bad request"
 // @Failure 404 "Not found"
 func UpdateEvaluation(c *gin.Context) {
@@ -71,7 +71,7 @@ func UpdateEvaluation(c *gin.Context) {
 // @param Authorization header string true "Token"
 // @Param id path int true "Evaluation ID"
 // @Router /evaluation/{id} [delete]
-// @Success 200 {object} models.Evaluation
+// @Success 200 {object} model.Evaluation
 // @Failure 404 "Not found"
 func DeleteEvaluation(c *gin.Context) {
 	controllers.DeleteEvaluation(c)
@@ -83,9 +83,9 @@ func DeleteEvaluation(c *gin.Context) {
 // @Produce  json
 // @Security BearerAuth
 // @param Authorization header string true "Token"
-// @Param evaluation body models.Evaluation true "Add evaluation"
+// @Param evaluation body model.Evaluation true "Add evaluation"
 // @Router /evaluation [post]
-// @Success 201 {object} models.Evaluation
+// @Success 201 {object} model.Evaluation
 // @Failure 400 "Bad request"
 // @Failure 404 "Not found"
 func AddEvaluation(c *gin.Context) {

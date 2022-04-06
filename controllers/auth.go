@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"APIGOLANGMAP/models"
+	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/services"
 	"net/http"
 
@@ -20,8 +20,8 @@ func CheckPasswordHash(password, hash string) bool {
 }
 
 func LoginHandler(c *gin.Context) {
-	var creds models.User
-	var usr models.User
+	var creds model.User
+	var usr model.User
 
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
@@ -44,7 +44,7 @@ func LoginHandler(c *gin.Context) {
 }
 
 func RegisterHandler(c *gin.Context) {
-	var creds models.User
+	var creds model.User
 
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
@@ -64,7 +64,7 @@ func RegisterHandler(c *gin.Context) {
 
 func RefreshHandler(c *gin.Context) {
 
-	var usr models.User
+	var usr model.User
 
 	services.OpenDatabase()
 	services.Db.Find(&usr, "username = ?", services.GetUsernameFromTokenJWT(c))
@@ -83,7 +83,7 @@ func RefreshHandler(c *gin.Context) {
 }
 
 func LogoutHandler(c *gin.Context) {
-	var usr models.User
+	var usr model.User
 
 	services.OpenDatabase()
 	services.Db.Find(&usr, "username = ?", services.GetUsernameFromTokenJWT(c))
@@ -100,7 +100,7 @@ func InvalidateToken(c *gin.Context) bool {
 	if token == "" {
 		return true
 	}
-	revoked := models.RevokedToken{
+	revoked := model.RevokedToken{
 		Token: token,
 	}
 	services.OpenDatabase()

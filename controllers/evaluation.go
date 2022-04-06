@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"APIGOLANGMAP/models"
+	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/services"
 	"net/http"
 
@@ -17,7 +17,7 @@ func Echo(c *gin.Context) {
 }
 
 func GetAllEvaluations(c *gin.Context) {
-	var evaluations []models.Evaluation
+	var evaluations []model.Evaluation
 
 	services.Db.Find(&evaluations)
 
@@ -30,7 +30,7 @@ func GetAllEvaluations(c *gin.Context) {
 }
 
 func GetEvaluationByID(c *gin.Context) {
-	var evaluation models.Evaluation
+	var evaluation model.Evaluation
 	id := c.Param("id")
 
 	services.Db.First(&evaluation, id)
@@ -43,7 +43,7 @@ func GetEvaluationByID(c *gin.Context) {
 }
 
 func UpdateEvaluation(c *gin.Context) {
-	var evaluation models.Evaluation
+	var evaluation model.Evaluation
 
 	id := c.Param("id")
 	services.Db.First(&evaluation, id)
@@ -63,7 +63,7 @@ func UpdateEvaluation(c *gin.Context) {
 }
 
 func AddEvaluation(c *gin.Context) {
-	var evaluation models.Evaluation
+	var evaluation model.Evaluation
 
 	if err := c.ShouldBindJSON(&evaluation); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Check syntax!"})
@@ -74,7 +74,7 @@ func AddEvaluation(c *gin.Context) {
 }
 
 func DeleteEvaluation(c *gin.Context) {
-	var evaluation models.Evaluation
+	var evaluation model.Evaluation
 
 	id := c.Param("id")
 	services.Db.First(&evaluation, id)

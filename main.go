@@ -1,7 +1,7 @@
 package main
 
 import (
-	"APIGOLANGMAP/models"
+	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
 
@@ -19,9 +19,9 @@ const AdminAccess = true
 
 func init() {
 	services.OpenDatabase()
-	services.Db.AutoMigrate(&models.Evaluation{})
-	services.Db.AutoMigrate(&models.User{})
-	services.Db.AutoMigrate(&models.RevokedToken{})
+	services.Db.AutoMigrate(&model.Evaluation{})
+	services.Db.AutoMigrate(&model.User{})
+	services.Db.AutoMigrate(&model.RevokedToken{})
 	services.CreateAdmin()
 }
 

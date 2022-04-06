@@ -1,7 +1,7 @@
 package services
 
 import (
-	"APIGOLANGMAP/models"
+	"APIGOLANGMAP/model"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -16,7 +16,7 @@ func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
 			c.Abort()
 		} else {
 			var tokenInput, _, _ = getAuthorizationToken(c)
-			token, err := jwt.ParseWithClaims(tokenInput, &models.Claims{}, func(token *jwt.Token) (interface{}, error) {
+			token, err := jwt.ParseWithClaims(tokenInput, &model.Claims{}, func(token *jwt.Token) (interface{}, error) {
 				return JwtKey, nil
 			})
 
@@ -26,7 +26,7 @@ func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
 				return
 			}
 
-			if claims, ok := token.Claims.(*models.Claims); ok && token.Valid {
+			if claims, ok := token.Claims.(*model.Claims); ok && token.Valid {
 				//fmt.Printf("%v %v", claims.Username, claims.StandardClaims.ExpiresAt)
 				c.Set("username", claims.Username)
 			}
