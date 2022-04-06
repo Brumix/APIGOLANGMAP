@@ -2,9 +2,10 @@ package services
 
 import (
 	"APIGOLANGMAP/model"
+	"net/http"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {

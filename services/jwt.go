@@ -25,12 +25,13 @@ func GetSecretKey() []byte {
 
 func GenerateTokenJWT(credentials model.User) string {
 	// Set expiration time of the token
-	expirationTime := time.Now().Add(15 * time.Minute)
+	// 43800 is the duration of a month in minutes
+	expirationTime := time.Now().Add(43800 * time.Minute)
 
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &model.Claims{
-		UserID:   credentials.ID,
-		Username: credentials.Username,
+		UserID:     credentials.ID,
+		Username:   credentials.Username,
 		AccessMode: credentials.AccessMode,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
@@ -108,10 +109,13 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 	// Check if token is revoked
 	var revokedTkn model.RevokedToken
 	OpenDatabase()
-	if  Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" { CloseDatabase(); return false }
+	if Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" {
+		CloseDatabase()
+		return false
+	}
 	CloseDatabase()
 
-	return ! (admin && claims.IsAdmin() != admin)
+	return !(admin && claims.IsAdmin() != admin)
 }
 
 func getAuthorizationToken(c *gin.Context) (string, bool, bool) {
