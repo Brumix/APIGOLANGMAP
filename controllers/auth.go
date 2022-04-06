@@ -66,7 +66,6 @@ func RefreshHandler(c *gin.Context) {
 
 	var usr models.User
 
-
 	services.OpenDatabase()
 	services.Db.Find(&usr, "username = ?", services.GetUsernameFromTokenJWT(c))
 
@@ -87,7 +86,7 @@ func LogoutHandler(c *gin.Context) {
 	var usr models.User
 
 	services.OpenDatabase()
-	services.Db.Find(&usr, "username = ?", c.GetHeader("username"))
+	services.Db.Find(&usr, "username = ?", services.GetUsernameFromTokenJWT(c))
 
 	if InvalidateToken(c) {
 		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!"})
