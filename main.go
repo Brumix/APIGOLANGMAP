@@ -14,12 +14,18 @@ import (
 
 var identityKey = "id"
 
+const UserAccess = false
+const AdminAccess = true
+
 func init() {
 	services.OpenDatabase()
 	services.Db.AutoMigrate(&model.Evaluation{})
 	services.Db.AutoMigrate(&model.User{})
+	services.Db.AutoMigrate(&model.RevokedToken{})
 	services.Db.AutoMigrate(&model.Position{})
 	services.Db.AutoMigrate(&model.Follower{})
+	services.CreateAdmin()
+	services.CloseDatabase()
 }
 
 func main() {
@@ -41,7 +47,7 @@ func main() {
 	})
 
 	evaluation := router.Group("/api/v1/evaluation")
-	evaluation.Use(services.AuthorizationRequired())
+	evaluation.Use(services.AuthorizationRequired(AdminAccess)) // admin just to test who can access this route
 	{
 		evaluation.POST("/", routes.AddEvaluation)
 		evaluation.GET("/", routes.GetAllEvaluation)
@@ -50,11 +56,20 @@ func main() {
 		evaluation.DELETE("/:id", routes.DeleteEvaluation)
 	}
 
+	/* localization := router.Group("/api/v1/localization")
+	localization.Use(services.AuthorizationRequired(AdminAccess))
+	{
+		localization.GET("/", routes.GetAllLocalizations)
+		localization.GET("/:id", routes.GetLocalizationById)
+		localization.GET("/:id", routes.GetLocalizationUsersByFilter)
+	} */
+
 	auth := router.Group("/api/v1/auth")
 	{
 		auth.POST("/login", routes.GenerateToken)
+		auth.POST("/logout", services.AuthorizationRequired(UserAccess), routes.InvalidateToken)
 		auth.POST("/register", routes.RegisterUser)
-		auth.PUT("/refresh_token", services.AuthorizationRequired(), routes.RefreshToken)
+		auth.PUT("/refresh_token", services.AuthorizationRequired(UserAccess), routes.RefreshToken)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

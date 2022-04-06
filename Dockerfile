@@ -3,18 +3,18 @@ FROM golang:1.13-alpine
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh gcc libc-dev
 
-RUN go get -u github.com/gin-gonic/gin
+# RUN go get -u github.com/gin-gonic/gin
 # RUN go get -u github.com/jinzhu/gorm # v1
 RUN go get -u gorm.io/gorm
 # RUN go get -u github.com/jinzhu/gorm/dialects/postgres # v1
 RUN go get -u gorm.io/driver/postgres
-RUN go get -u github.com/swaggo/gin-swagger
+# RUN go get -u github.com/swaggo/gin-swagger
 RUN go get -u github.com/swaggo/swag/cmd/swag
 RUN go get -u github.com/alecthomas/template
 RUN go get -u github.com/swaggo/files
 RUN go get -u github.com/swaggo/http-swagger
-RUN go get -u github.com/gin-contrib/cors
-RUN go get -u github.com/rs/cors/wrapper/gin
+# RUN go get -u github.com/gin-contrib/cors
+# RUN go get -u github.com/rs/cors/wrapper/gin
 RUN go get -u github.com/dgrijalva/jwt-go
 RUN go get -u github.com/stretchr/testify
 RUN go get -u golang.org/x/crypto/bcrypt
