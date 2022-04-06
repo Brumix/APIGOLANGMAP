@@ -12,6 +12,7 @@ type CrudPositions interface {
 	StorePosition(position *model.Position) error
 	DeletePosition(position *model.Position) error
 	GetAllPositions() ([]model.Position, error)
+	GetAllUsers() ([]model.User, error)
 }
 
 type PositionStruck struct{}
@@ -64,17 +65,8 @@ func (p *PositionStruck) DeletePosition(position *model.Position) error {
 
 func (p *PositionStruck) GetAllPositions() ([]model.Position, error) {
 	var positions []model.Position
-
-	defer func() {
-		var dataBase, _ = DB.DB()
-		err := dataBase.Close()
-		if err != nil {
-			panic("Error Closing the DataBase!!")
-		}
-	}()
-
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		result := tx.Where("updated_at < ?", time.Now().Add(-(1 * time.Minute))).Find(&positions)
+		result := tx.Where("updated_at > ?", time.Now().Add(-(1 * time.Minute))).Find(&positions)
 		if result.Error != nil {
 			panic("ERROR GETTING the Positions")
 			return result.Error
@@ -85,5 +77,23 @@ func (p *PositionStruck) GetAllPositions() ([]model.Position, error) {
 		return []model.Position{}, err
 	}
 	return positions, nil
+
+}
+
+func (p *PositionStruck) GetAllUsers() ([]model.User, error) {
+	var users []model.User
+
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		result := tx.Find(&users)
+		if result.Error != nil {
+			panic("ERROR GETTING the Positions")
+			return result.Error
+		}
+		return nil
+	})
+	if err != nil {
+		return []model.User{}, err
+	}
+	return users, nil
 
 }
