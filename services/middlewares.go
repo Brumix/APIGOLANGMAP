@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthorizationRequired() gin.HandlerFunc {
+func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		if !ValidateTokenJWT(c) {
+		if !ValidateTokenJWT(c, adminAccess) {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Not authorized"})
 			c.Abort()
 		} else {
@@ -28,10 +28,12 @@ func AuthorizationRequired() gin.HandlerFunc {
 
 			if claims, ok := token.Claims.(*model.Claims); ok && token.Valid {
 				//fmt.Printf("%v %v", claims.Username, claims.StandardClaims.ExpiresAt)
+				c.Set("userid", claims.UserID)
 				c.Set("username", claims.Username)
 			}
 			OpenDatabase()
 
+			defer CloseDatabase()
 			// before request
 			c.Next()
 		}
