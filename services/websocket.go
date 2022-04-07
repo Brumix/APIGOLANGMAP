@@ -15,9 +15,14 @@ var upgrader = websocket.Upgrader{
 
 var clients = make(map[uint]*websocket.Conn)
 
-func initConnectionSocket(c *gin.Context) {
-
-	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+func InitConnectionSocket(c *gin.Context) {
+	//idUser, _ := c.Get("userid")
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		//if idUser == nil {
+		//	return false
+		//}
+		return true
+	}
 	// upgrade this connection to a WebSocket
 	// connection
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -29,7 +34,7 @@ func initConnectionSocket(c *gin.Context) {
 	//TODO GET CLIENT ID
 	clients[0] = ws
 
-	reader(ws)
+	go reader(ws)
 }
 
 // define a reader which will listen for
@@ -38,18 +43,13 @@ func initConnectionSocket(c *gin.Context) {
 func reader(conn *websocket.Conn) {
 	for {
 		// read in a message
-		messageType, p, err := conn.ReadMessage()
+		_, p, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
 		}
 		// print out that message for clarity
 		fmt.Println(string(p))
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
 	}
 }
 
@@ -58,8 +58,8 @@ func sender(idClient uint, message string) {
 		log.Println("THAT CLIENT DON`T EXIST")
 		return
 	}
-	err := clients[idClient].WriteMessage(1, []byte(message))
+	err := clients[idClient].WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
-		panic("[WEBSOCKET] SEND A MESSAGE!!")
+		log.Fatalf("[WEBSOCKET] SEND A MESSAGE -> %v", err)
 	}
 }
