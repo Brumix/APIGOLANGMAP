@@ -11,6 +11,7 @@ var repo = repository.NewCrudPositions()
 
 func RegisterLocation(c *gin.Context) {
 	var position model.Position
+
 	err := c.Bind(&position)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})

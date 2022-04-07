@@ -22,13 +22,6 @@ func securityConcurrent() {
 	var semaphoreChan = make(chan struct{}, MAXCONCURENT)
 	var positions, errGetAllPositions = repository.NewCrudPositions().GetAllPositions()
 	var users, errUsers = repository.NewCrudPositions().GetAllUsers()
-	defer func() {
-		var dataBase, _ = Db.DB()
-		err := dataBase.Close()
-		if err != nil {
-			panic("Error Closing the DataBase!!")
-		}
-	}()
 
 	var setUsers = make(map[uint]struct{})
 	if errGetAllPositions != nil || errUsers != nil {
