@@ -44,3 +44,17 @@ func DeleteLocation(c *gin.Context) {
 		"Position": position})
 	return
 }
+
+func GetAllUsersUnderXKms(c *gin.Context) {
+	var position model.Position
+
+	if err := c.Bind(&position); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+		return
+	}
+
+	x := c.Param("x")
+
+	repo.GE
+
+}

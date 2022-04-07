@@ -79,6 +79,8 @@ func main() {
 		sos.POST("/desactivate", routes.DesactivateSOS)
 	}
 
+	router.GET("/users_under_xkms/:x", routes.GetAllUsersUnderXKms)
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 }
