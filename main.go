@@ -58,7 +58,6 @@ func main() {
 		evaluation.DELETE("/:id", routes.DeleteEvaluation)
 	}
 
-
 	auth := router.Group("/api/v1/auth")
 	{
 		auth.POST("/login", routes.GenerateToken)
@@ -70,6 +69,7 @@ func main() {
 	position := router.Group("/api/v1/position")
 	{
 		position.POST("/", routes.RegisterLocation)
+		position.DELETE("/", routes.DeleteLocation)
 
 	}
 
