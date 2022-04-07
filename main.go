@@ -18,6 +18,7 @@ func init() {
 	services.Db.AutoMigrate(&model.Evaluation{})
 	services.Db.AutoMigrate(&model.User{})
 	services.Db.AutoMigrate(&model.Position{})
+	services.Db.Exec("alter table positions add column geolocation geography(point)")
 	services.Db.AutoMigrate(&model.Follower{})
 	repository.GetDataBase(services.Db)
 	services.StartService()

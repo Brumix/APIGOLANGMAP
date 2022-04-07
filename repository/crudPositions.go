@@ -26,32 +26,20 @@ func GetDataBase(database *gorm.DB) {
 }
 
 func (p *PositionStruck) StorePosition(position *model.Position) error {
-	defer func() {
-		var dataBase, _ = DB.DB()
-		err := dataBase.Close()
-		if err != nil {
-			panic("Error Closing the DataBase!!")
-		}
-	}()
-
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(position).Error; err != nil {
 			panic("ERROR creating the Position")
 			return err
 		}
+		DB.Exec("update positions set geolocation = 'point(? ?)' where user_id=?", int(position.Longitude), int(position.Latitude), position.UserID)
+
 		return nil
 	})
+
 	return err
 }
 
 func (p *PositionStruck) DeletePosition(position *model.Position) error {
-	defer func() {
-		var dataBase, _ = DB.DB()
-		err := dataBase.Close()
-		if err != nil {
-			panic("Error Closing the DataBase!!")
-		}
-	}()
 
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Delete(position).Error; err != nil {

@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM golang:1.17.8-alpine3.15
 
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh gcc libc-dev
@@ -29,6 +29,7 @@ WORKDIR /go/src/projetoapi
 
 # Copy everything from the current directory to the Working Directory inside the container
 COPY . .
+
 
 # RUN Swagger
 RUN swag init
