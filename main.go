@@ -69,7 +69,7 @@ func main() {
 	position := router.Group("/api/v1/position")
 	{
 		position.POST("/", routes.RegisterLocation)
-		position.DELETE("/", routes.DeleteLocation)
+		position.DELETE("/:id", routes.DeleteLocation)
 
 	}
 

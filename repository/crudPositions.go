@@ -3,6 +3,7 @@ package repository
 import (
 	"APIGOLANGMAP/model"
 	"gorm.io/gorm"
+	"log"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -12,7 +13,7 @@ var DB *gorm.DB
 
 type CrudPositions interface {
 	StorePosition(position *model.Position) error
-	DeletePosition(position *model.Position) error
+	//DeletePosition(position *model.Position) error
 	GetAllPositions() ([]model.Position, error)
 	GetAllUsers() ([]model.User, error)
 }
@@ -30,13 +31,13 @@ func GetDataBase(database *gorm.DB) {
 func (p *PositionStruck) StorePosition(position *model.Position) error {
 	//err := DB.Transaction(func(tx *gorm.DB) error {
 	if err := DB.Create(position).Error; err != nil {
-		panic("ERROR creating the Position")
+		log.Println("ERROR creating the Position")
 		return err
 	}
 
 	//DB.Exec("update positions set geolocation = 'point(? ?)' where user_id=?", int(position.Longitude), int(position.Latitude), position.UserID)
 	if errGeoLocation := DB.Exec("UPDATE positions SET geolocation = ST_SetSRID(ST_Point(longitude,latitude),4326)::geography").Error; errGeoLocation != nil {
-		panic("ERROR updating the Position")
+		log.Println("ERROR updating the Position")
 		return errGeoLocation
 	}
 	return nil
@@ -45,7 +46,7 @@ func (p *PositionStruck) StorePosition(position *model.Position) error {
 	//return err
 }
 
-func (p *PositionStruck) DeletePosition(position *model.Position) error {
+/*func (p *PositionStruck) DeletePosition(position *model.Position) error {
 
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Delete(position).Error; err != nil {
@@ -55,7 +56,7 @@ func (p *PositionStruck) DeletePosition(position *model.Position) error {
 		return nil
 	})
 	return err
-}
+}*/
 
 func (p *PositionStruck) GetAllPositions() ([]model.Position, error) {
 	var positions []model.Position

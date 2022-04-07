@@ -3,6 +3,7 @@ package controllers
 import (
 	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/repository"
+	"APIGOLANGMAP/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -30,18 +31,16 @@ func RegisterLocation(c *gin.Context) {
 }
 func DeleteLocation(c *gin.Context) {
 	var position model.Position
-	err := c.Bind(&position)
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-		return
+	id := c.Param("id")
+	services.Db.First(&position, id)
 
-	}
-	if errDelete := repo.DeletePosition(&position); errDelete != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+	if position.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "None found!"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"msg": "Position deleted with success!!",
-		"Position": position})
+
+	services.Db.Delete(&position)
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Delete succeeded!"})
 	return
 }
