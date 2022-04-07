@@ -14,7 +14,7 @@ type User struct {
 	Username      string     `json:"username" gorm:"unique"`
 	Password      string     `json:"password,omitempty"`
 	AccessMode    int        `json:"access_mode" gorm:"default:1"`
-	UserFriends   []Follower `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UserFriends   []Follower `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:user_id;references:id"`
 	UserPositions []Position `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 

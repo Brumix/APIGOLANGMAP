@@ -9,9 +9,18 @@ import (
 
 func FetchAllFollowers(userID uint) []model.Follower {
 	var followers []model.Follower
+	services.Db.Where("user_id = ?", userID).Find(&followers)
 
-	services.Db.Find(&followers, userID)
+	// Get Follower Users Info
+	//var user model.User
+	//services.Db.First(&user, userID)
+	//fmt.Println(">>> ", user.UserFriends)
 
+	//var users []model.User
+	//for _, ar := range followers {
+	//	services.Db.Where("id = ?", ar.FollowerUserID).Find(&users)
+	//}
+	//fmt.Println(">>> ", users)
 	return followers
 }
 
@@ -48,10 +57,17 @@ func AssociateFollower(c *gin.Context) {
 	}
 
 	follower.UserID = userID.(uint)
-	// Falta verificar se o follower user id existe!
+	// Verify userID in body exists
 	var user model.User
 	if err := services.Db.Where("id = ?", follower.FollowerUserID).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Follower User ID Not Found"})
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "Follower User ID Not Found"})
+		return
+	}
+	// Verify if row already exists
+	var tmpFollower model.Follower
+	services.Db.Where(&model.Follower{UserID: follower.UserID, FollowerUserID: follower.FollowerUserID}).First(&tmpFollower)
+	if tmpFollower.ID > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Follower User ID Already Associated"})
 		return
 	}
 
