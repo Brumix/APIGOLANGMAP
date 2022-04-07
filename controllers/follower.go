@@ -21,13 +21,14 @@ func FetchAllFollowers(userID uint) []model.Follower {
 	//	services.Db.Where("id = ?", ar.FollowerUserID).Find(&users)
 	//}
 	//fmt.Println(">>> ", users)
+
 	return followers
 }
 
 func GetAllFollowers(c *gin.Context) {
-	userID, err := c.Get("userid")
+	userID, errAuth := c.Get("userid")
 
-	if err == false {
+	if errAuth == false {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Auth Token Malformed!"})
 		return
 	}
@@ -72,7 +73,6 @@ func AssociateFollower(c *gin.Context) {
 	}
 
 	services.Db.Save(&follower)
-
 	followers := FetchAllFollowers(userID.(uint))
 
 	c.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "message": "Association Successful!", "followers": followers})
