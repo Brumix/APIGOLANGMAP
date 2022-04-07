@@ -58,7 +58,7 @@ func main() {
 		evaluation.DELETE("/:id", routes.DeleteEvaluation)
 	}
 	follower := router.Group("/api/v1/follower")
-	follower.Use(services.AuthorizationRequired())
+	follower.Use(services.AuthorizationRequired(UserAccess))
 	{
 		follower.GET("/", routes.GetAllFollowers)
 		follower.POST("/assoc", routes.AssociateFollower)
