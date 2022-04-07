@@ -8,13 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"time"
 )
 
 type Location struct {
 	gorm.Model `swaggerignore:"true" json:"-"`
-	Start      string `json:"start" binding:"required,min=8,max=10"`
-	End        string `json:"end" binding:"required,min=8,max=10"`
-	Limit      int    `json:"limit"`
+	Start      string `json:"start" binding:"required"`
+	End        string `json:"end" binding:"required"`
 }
 
 var repo = repository.NewCrudPositions()
@@ -71,37 +71,37 @@ func GetLocationHistory(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&location); err != nil {
-		// If Body Comes Empty -> Get Last Location
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Check Syntax!"})
 		return
 	}
-	var defaultLimit = 2
-	if location.Limit != 0 { // Verify If Body Has 'limit' Field
-		defaultLimit = location.Limit
-	}
-	fmt.Println(">>> ", defaultLimit)
 
-	if err := services.Db.Where("user_id = ?", userID).Order("created_at DESC").Find(&positions).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "User ID Not Found"})
-		return
-	}
+	var startDate, errStart = ValidateDate(location.Start)
+	var endDate, errEnd = ValidateDate(location.End)
 
-	if location.Start != "" && location.End != "" && location.Limit == 0 {
-		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "msg": "My Locations History", "locations": positions})
-		return
-	}
-
-	// Has Body
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "My Locations History By Filter"})
-	return
-
-	/*
+	// Datas invalidas retorna todas as posições do utilizador
+	if errStart != nil || errEnd != nil {
 		if err := services.Db.Where("user_id = ?", userID).Order("created_at DESC").Find(&positions).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "User ID Not Found"})
 			return
 		}
+		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "extra": "Invalid date, showing all locations", "message": "My Locations History", "locations": positions})
+		return
+	}
 
-		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "msg": "My Locations History", "locations": positions})*/
+	// Retorna as localizações entre datas caso as datas do body estejam formatadas corretamente
+	if startDate.Before(endDate) != true {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "End Date Must Occur After Start Date"})
+		return
+	}
+
+	if err := services.Db.Where("user_id = ? AND created_at > ? AND created_at < ?", userID, startDate, endDate).Order("created_at DESC").Find(&positions).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "User ID Not Found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "My Locations History Filtered", "locations": positions})
+	return
+
 }
 
 func DeleteLocation(c *gin.Context) {
@@ -120,4 +120,9 @@ func DeleteLocation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"msg": "Position deleted with success!!",
 		"Position": position})
 	return
+}
+
+func ValidateDate(dateStr string) (time.Time, error) {
+	d, err := time.Parse("2006-01-02", dateStr)
+	return d, err
 }
