@@ -412,6 +412,55 @@
           }
         }
       }
+    },
+    "/alert/time": {
+      "put": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Atualiza a periodicidade de alerta determinando o tempo máximo até dar uma pessoa como perdida",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Atualiza a periodicidade de alerta",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          },
+          {
+            "description": "Atualiza a periodicidade de alerta",
+            "name": "username",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.Alert"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/model.Alert"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -429,6 +478,14 @@
         "Note": {
           "type": "string"
         },
+        "Rating": {
+          "type": "integer"
+        }
+      }
+    },
+    "model.Alert": {
+      "type": "object",
+      "properties": {
         "Rating": {
           "type": "integer"
         }

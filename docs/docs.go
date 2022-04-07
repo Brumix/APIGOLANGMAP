@@ -167,6 +167,55 @@ var doc = `{
                 }
             }
         },
+		"/alert/time": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Atualiza a periodicidade de alerta determinando o tempo máximo até dar uma pessoa como perdida",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Atualiza a periodicidade de alerta",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Alert",
+                        "name": "Username",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Alert"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Alert"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+        },
         "/echo": {
             "get": {
                 "description": "Echo the data sent though the get request.",
@@ -451,6 +500,14 @@ var doc = `{
                 "Rating": {
                     "type": "integer"
                 }
+            }
+        },
+		"model.Alert": {
+            "type": "object",
+            "properties": {
+                "AlertTime": {
+                    "type": "integer"
+                },
             }
         },
         "model.User": {

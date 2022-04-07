@@ -56,6 +56,13 @@ func main() {
 		evaluation.DELETE("/:id", routes.DeleteEvaluation)
 	}
 
+	alertTime := router.Group("/api/v1/alert")
+	alertTime.Use(services.AuthorizationRequired(UserAccess))
+	{
+		alertTime.PUT("/time/", routes.UpdateAlertTime)
+
+	}
+
 	/* localization := router.Group("/api/v1/localization")
 	localization.Use(services.AuthorizationRequired(AdminAccess))
 	{

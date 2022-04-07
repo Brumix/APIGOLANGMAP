@@ -18,6 +18,11 @@ definitions:
       username:
         type: string
     type: object
+  model.Alert:
+    properties:
+      alertTime:
+        type: integer
+    type: object
 info:
   contact: { }
 paths:
@@ -286,4 +291,37 @@ paths:
       security:
         - BearerAuth: [ ]
       summary: Atualiza uma avaliação
+
+  /alert/time:
+    put:
+      consumes:
+        - application/json
+      description: Atualiza a periodicidade de alerta
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Update Alert Time
+          in: body
+          name: alertTime
+          required: true
+          schema:
+            $ref: '#/definitions/model.Alert'
+
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Alert'
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+      security:
+        - BearerAuth: [ ]
+      summary: Atualiza a periodicidade de alerta
 swagger: "2.0"

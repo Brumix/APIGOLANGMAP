@@ -11,6 +11,8 @@ const AdminAccess = -1
 
 type User struct {
 	gorm.Model    `swaggerignore:"true"`
+	AlertTime     int        `json:"alertTime,omitempty" gorm:"default:1"`
+	SOS           bool       `json:"sos,omitempty" gorm:"default:0"`
 	Username      string     `json:"username" gorm:"unique"`
 	Password      string     `json:"password,omitempty"`
 	AccessMode    int        `json:"access_mode" gorm:"default:1"`
