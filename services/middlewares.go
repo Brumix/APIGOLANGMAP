@@ -30,6 +30,7 @@ func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
 				//fmt.Printf("%v %v", claims.Username, claims.StandardClaims.ExpiresAt)
 				c.Set("userid", claims.UserID)
 				c.Set("username", claims.Username)
+				c.Set("isSOSActivated", claims.IsSOSActivated)
 			}
 			OpenDatabase()
 

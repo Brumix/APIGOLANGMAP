@@ -73,6 +73,12 @@ func main() {
 
 	}
 
+	sos := router.Group("/api/v1/sos")
+	{
+		sos.POST("/activate", routes.ActivateSOS)
+		sos.POST("/desactivate", routes.DesactivateSOS)
+	}
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 }

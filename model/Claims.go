@@ -12,6 +12,7 @@ type Claims struct {
 	UserID             uint   `json:"userid"`
 	Username           string `json:"username"`
 	AccessMode         int    `json:"access_mode"`
+	IsSOSActivated     bool   `json:"isSOSActivated"`
 	jwt.StandardClaims `swaggerignore:"true"`
 }
 
