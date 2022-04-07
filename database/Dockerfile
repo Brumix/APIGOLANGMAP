@@ -1,4 +1,4 @@
-FROM postgres
+FROM postgis/postgis
 
 ENV PORT=5432
 

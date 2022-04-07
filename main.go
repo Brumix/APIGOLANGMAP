@@ -18,11 +18,10 @@ const AdminAccess = true
 
 func init() {
 	services.OpenDatabase()
-	services.Db.AutoMigrate(&model.Evaluation{})
 	services.Db.AutoMigrate(&model.User{})
 	services.Db.AutoMigrate(&model.RevokedToken{})
 	services.Db.AutoMigrate(&model.Position{})
-	services.Db.Exec("alter table positions add column geolocation geography(point)")
+	services.Db.Exec("alter table positions add column if not exists geolocation geography(point)")
 	services.Db.AutoMigrate(&model.Follower{})
 	services.CreateAdmin()
 	//	services.CloseDatabase()
@@ -40,22 +39,17 @@ func main() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	// NO AUTH
-	router.GET("/api/v1/echo", routes.EchoRepeat)
-
 	// AUTH
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})
 
-	evaluation := router.Group("/api/v1/evaluation")
-	evaluation.Use(services.AuthorizationRequired(AdminAccess)) // admin just to test who can access this route
+	follower := router.Group("/api/v1/follower")
+	follower.Use(services.AuthorizationRequired(UserAccess))
 	{
-		evaluation.POST("/", routes.AddEvaluation)
-		evaluation.GET("/", routes.GetAllEvaluation)
-		evaluation.GET("/:id", routes.GetEvaluationById)
-		evaluation.PUT("/:id", routes.UpdateEvaluation)
-		evaluation.DELETE("/:id", routes.DeleteEvaluation)
+		follower.GET("/", routes.GetAllFollowers)
+		follower.POST("/assoc", routes.AssociateFollower)
+		follower.POST("/deassoc", routes.DeassociateFollower)
 	}
 
 	auth := router.Group("/api/v1/auth")
@@ -67,8 +61,11 @@ func main() {
 	}
 
 	position := router.Group("/api/v1/position")
+	position.Use(services.AuthorizationRequired(UserAccess))
 	{
 		position.POST("/", routes.RegisterLocation)
+		position.GET("/", routes.GetMyLocation)
+		position.POST("/history", routes.GetLocationHistory)
 		position.DELETE("/", routes.DeleteLocation)
 
 	}
