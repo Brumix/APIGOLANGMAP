@@ -4,6 +4,8 @@ import (
 	"APIGOLANGMAP/model"
 	"gorm.io/gorm"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 var DB *gorm.DB
@@ -26,17 +28,21 @@ func GetDataBase(database *gorm.DB) {
 }
 
 func (p *PositionStruck) StorePosition(position *model.Position) error {
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(position).Error; err != nil {
-			panic("ERROR creating the Position")
-			return err
-		}
-		DB.Exec("update positions set geolocation = 'point(? ?)' where user_id=?", int(position.Longitude), int(position.Latitude), position.UserID)
+	//err := DB.Transaction(func(tx *gorm.DB) error {
+	if err := DB.Create(position).Error; err != nil {
+		panic("ERROR creating the Position")
+		return err
+	}
 
-		return nil
-	})
+	//DB.Exec("update positions set geolocation = 'point(? ?)' where user_id=?", int(position.Longitude), int(position.Latitude), position.UserID)
+	if errGeoLocation := DB.Exec("UPDATE positions SET geolocation = ST_SetSRID(ST_Point(longitude,latitude),4326)::geography").Error; errGeoLocation != nil {
+		panic("ERROR updating the Position")
+		return errGeoLocation
+	}
+	return nil
+	//} )
 
-	return err
+	//return err
 }
 
 func (p *PositionStruck) DeletePosition(position *model.Position) error {
