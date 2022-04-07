@@ -73,6 +73,7 @@ func main() {
 
 	}
 
+	router.GET("/socket", services.InitConnectionSocket)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 }
