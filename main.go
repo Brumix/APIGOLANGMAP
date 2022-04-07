@@ -2,14 +2,13 @@ package main
 
 import (
 	"APIGOLANGMAP/model"
+	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
-
 	"github.com/gin-gonic/gin"
-	_ "gorm.io/driver/postgres"
-
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "gorm.io/driver/postgres"
 )
 
 var identityKey = "id"
@@ -23,9 +22,12 @@ func init() {
 	services.Db.AutoMigrate(&model.User{})
 	services.Db.AutoMigrate(&model.RevokedToken{})
 	services.Db.AutoMigrate(&model.Position{})
+	services.Db.Exec("alter table positions add column geolocation geography(point)")
 	services.Db.AutoMigrate(&model.Follower{})
 	services.CreateAdmin()
-	services.CloseDatabase()
+	//	services.CloseDatabase()
+	repository.GetDataBase(services.Db)
+	services.StartService()
 }
 
 func main() {
@@ -63,20 +65,19 @@ func main() {
 		follower.POST("/deassoc", routes.DeassociateFollower)
 	}
 
-	/* localization := router.Group("/api/v1/localization")
-	localization.Use(services.AuthorizationRequired(AdminAccess))
-	{
-		localization.GET("/", routes.GetAllLocalizations)
-		localization.GET("/:id", routes.GetLocalizationById)
-		localization.GET("/:id", routes.GetLocalizationUsersByFilter)
-	} */
-
 	auth := router.Group("/api/v1/auth")
 	{
 		auth.POST("/login", routes.GenerateToken)
 		auth.POST("/logout", services.AuthorizationRequired(UserAccess), routes.InvalidateToken)
 		auth.POST("/register", routes.RegisterUser)
 		auth.PUT("/refresh_token", services.AuthorizationRequired(UserAccess), routes.RefreshToken)
+	}
+
+	position := router.Group("/api/v1/position")
+	{
+		position.POST("/", routes.RegisterLocation)
+		position.DELETE("/", routes.DeleteLocation)
+
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

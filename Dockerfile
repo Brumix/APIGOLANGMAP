@@ -20,7 +20,9 @@ WORKDIR /go/src/projetoapi
 # Copy everything from the current directory to the Working Directory inside the container
 COPY . .
 
+
 RUN go mod tidy
+
 
 # RUN Swagger
 RUN swag init
