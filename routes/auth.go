@@ -53,7 +53,7 @@ func RefreshToken(c *gin.Context) {
 // @Router /auth/logout [put]
 // @Param evaluation body model.User true "Do logout"
 // @param Authorization header string true "Token"
-// @Success 200 bool
+// @Success 200 "bool"
 // @Failure 406 "Cannot log out"
 func InvalidateToken(c *gin.Context) {
 	controllers.LogoutHandler(c)

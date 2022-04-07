@@ -3,7 +3,7 @@ version: "3.9"
 services:
   database:
     restart: always
-    image: postgres:12 # use latest official postgres version
+    image: postgis/postgis # use latest official postgres version
     volumes:
       - database-data:/var/lib/postgresql/data/
     environment:

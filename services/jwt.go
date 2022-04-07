@@ -108,12 +108,9 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 
 	// Check if token is revoked
 	var revokedTkn model.RevokedToken
-	OpenDatabase()
 	if Db.Find(&revokedTkn, "token = ?", tokenString); revokedTkn.Token != "" {
-		CloseDatabase()
 		return false
 	}
-	CloseDatabase()
 
 	return !(admin && claims.IsAdmin() != admin)
 }
