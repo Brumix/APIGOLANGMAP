@@ -12,3 +12,7 @@ func RegisterLocation(c *gin.Context) {
 func DeleteLocation(c *gin.Context) {
 	controllers.DeleteLocation(c)
 }
+
+func GetUsersLocationWithFilters(c *gin.Context){
+	controllers.GetUsersLocationWithFilters(c)
+}

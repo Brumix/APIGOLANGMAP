@@ -5,6 +5,7 @@ import (
 	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -70,6 +71,7 @@ func main() {
 	{
 		position.POST("/", routes.RegisterLocation)
 		position.DELETE("/", routes.DeleteLocation)
+		position.POST("/locationWithFilter", routes.GetUsersLocationWithFilters)
 
 	}
 
