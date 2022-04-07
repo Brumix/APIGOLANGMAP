@@ -2,19 +2,17 @@ package repository
 
 import (
 	"APIGOLANGMAP/model"
+	"database/sql"
+	_ "github.com/lib/pq"
 	"gorm.io/gorm"
 	"log"
-	"time"
-
-	_ "github.com/lib/pq"
 )
 
 var DB *gorm.DB
 
 type CrudPositions interface {
 	StorePosition(position *model.Position) error
-	//DeletePosition(position *model.Position) error
-	GetAllPositions() ([]model.Position, error)
+	GetAllPositions() (*sql.Rows, error)
 	GetAllUsers() ([]model.User, error)
 }
 
@@ -29,50 +27,24 @@ func GetDataBase(database *gorm.DB) {
 }
 
 func (p *PositionStruck) StorePosition(position *model.Position) error {
-	//err := DB.Transaction(func(tx *gorm.DB) error {
 	if err := DB.Create(position).Error; err != nil {
 		log.Println("ERROR creating the Position")
 		return err
 	}
 
-	//DB.Exec("update positions set geolocation = 'point(? ?)' where user_id=?", int(position.Longitude), int(position.Latitude), position.UserID)
 	if errGeoLocation := DB.Exec("UPDATE positions SET geolocation = ST_SetSRID(ST_Point(longitude,latitude),4326)::geography").Error; errGeoLocation != nil {
 		log.Println("ERROR updating the Position")
 		return errGeoLocation
 	}
 	return nil
-	//} )
-
-	//return err
 }
 
-/*func (p *PositionStruck) DeletePosition(position *model.Position) error {
-
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Delete(position).Error; err != nil {
-			panic("ERROR Deleting the Position")
-			return err
-		}
-		return nil
-	})
-	return err
-}*/
-
-func (p *PositionStruck) GetAllPositions() ([]model.Position, error) {
-	var positions []model.Position
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		result := tx.Where("updated_at > ?", time.Now().Add(-(1 * time.Minute))).Find(&positions)
-		if result.Error != nil {
-			panic("ERROR GETTING the Positions")
-			return result.Error
-		}
-		return nil
-	})
+func (p *PositionStruck) GetAllPositions() (*sql.Rows, error) {
+	rows, err := DB.Table("positions").Distinct("user_id, MAX(created_at)").Group("user_id").Rows()
 	if err != nil {
-		return []model.Position{}, err
+		return nil, err
 	}
-	return positions, nil
-
+	return rows, nil
 }
 
 func (p *PositionStruck) GetAllUsers() ([]model.User, error) {

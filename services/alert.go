@@ -3,58 +3,56 @@ package services
 import (
 	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/repository"
+	"fmt"
 	"github.com/go-co-op/gocron"
-	"log"
 	"time"
 )
 
-const MAXCONCURENT = 5
+const MAXCONCURENT = 10
 
 func StartService() {
 	cron := gocron.NewScheduler(time.UTC)
-	_, err := cron.Every(1).Hour().Do(securityConcurrent)
-	if err != nil {
-		log.Println("ERROR LAUNCHING THE CRON JOB")
-	}
+	cron.Every(1).Hour().Do(securityConcurrent)
+	cron.StartAsync()
+
 }
 
 func securityConcurrent() {
+	fmt.Println("LAUNCH!!")
 	var semaphoreChan = make(chan struct{}, MAXCONCURENT)
+	var results = make(map[string]interface{})
 	var positions, errGetAllPositions = repository.NewCrudPositions().GetAllPositions()
-	var users, errUsers = repository.NewCrudPositions().GetAllUsers()
 
-	var setUsers = make(map[uint]struct{})
-	if errGetAllPositions != nil || errUsers != nil {
+	if errGetAllPositions != nil {
 		panic("Error service SecurityConcurrent ")
 		return
 	}
-	for _, position := range positions {
-		if _, exists := setUsers[position.UserID]; exists {
+	defer positions.Close()
+	for positions.Next() {
+		err := Db.ScanRows(positions, &results)
+		if err != nil {
+			fmt.Println("Error Scanning Row")
 			continue
 		}
-		setUsers[position.UserID] = struct{}{}
-	}
-
-	for _, user := range users {
-
-		if _, exists := setUsers[user.ID]; exists {
-			continue
-		}
-
+		//TODO ADD CUSTOM TIME VERIFICATION fmt.Println(results["max"].(time.Time))
 		semaphoreChan <- struct{}{}
-		notifyUser := user
+		notifyUser := results["user_id"].(int64)
 		go func() {
 			defer func() {
 				<-semaphoreChan
 			}()
-			alertUser(notifyUser)
+			alertUser(uint(notifyUser))
 
 		}()
 	}
 }
 
-func alertUser(user model.User) {
-	//TODO FUNCTION FRIENDS
-	sender(user.ID, "ALERT!!")
-	log.Println("ALERT!!", user.Username)
+func alertUser(user uint) {
+	fmt.Println(user)
+	var followers []model.Follower
+	Db.Where("user_id = ?", user).Find(&followers)
+	msg := fmt.Sprintf("Alert User %d maybe in Danger", user)
+	for _, follower := range followers {
+		sender(follower.FollowerUserID, msg)
+	}
 }

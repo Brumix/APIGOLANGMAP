@@ -31,7 +31,8 @@ func InitConnectionSocket(c *gin.Context) {
 	}
 	// helpful log statement to show connections
 	log.Println("Client Connected")
-	//TODO GET CLIENT ID
+
+	//clients[idUser.(uint)] = ws
 	clients[0] = ws
 
 	go reader(ws)

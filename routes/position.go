@@ -2,6 +2,7 @@ package routes
 
 import (
 	"APIGOLANGMAP/controllers"
+	"APIGOLANGMAP/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,6 @@ import (
 func RegisterLocation(c *gin.Context) {
 	controllers.RegisterLocation(c)
 }
-
 
 // @Summary Obter a última localização do utilizador
 // @Description Exibe a lista da última localização do utilizador
@@ -50,10 +50,31 @@ func GetLocationHistory(c *gin.Context) {
 	controllers.GetLocationHistory(c)
 }
 
+// @Summary Exclui uma localização
+// @Description Exclui uma localização selecionada
+// @ID get-string-by-int
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @param Authorization header string true "Token"
 // @Param id path int true "Position ID"
 // @Router /position/{id} [delete]
-// @Success 200 {object} model.Position
-// @Failure 404 "Not found"
+// @Success 200 "Delete succeeded!"
+// @Failure 404 "None found!"
 func DeleteLocation(c *gin.Context) {
 	controllers.DeleteLocation(c)
+}
+
+// @Summary Iniciar conecção com a webSocket
+// @Description Inicia todos os recursos necessario para a criação de uma webSocket com o cliente
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @param Authorization header string true "Token"
+// @Success 200 "Connection confirm"
+// @Router /socket [get]
+// @Failure 404 "Connection failed"
+// @Failure 400 "User Token Malformed"
+func WebSocket(c *gin.Context) {
+	services.InitConnectionSocket(c)
 }

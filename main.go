@@ -66,10 +66,11 @@ func main() {
 		position.POST("/", routes.RegisterLocation)
 		position.GET("/", routes.GetMyLocation)
 		position.POST("/history", routes.GetLocationHistory)
-		position.DELETE("/", routes.DeleteLocation)
+		position.DELETE("/:id", routes.DeleteLocation)
 	}
 
-	router.GET("/socket", services.InitConnectionSocket)
+	router.GET("/socket", routes.WebSocket)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
+
 }
