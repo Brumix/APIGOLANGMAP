@@ -5,7 +5,6 @@ import (
 	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/services"
 	"fmt"
-	"log"
 	"strconv"
 
 	"net/http"
@@ -125,6 +124,7 @@ func DeleteLocation(c *gin.Context) {
 
 func GetUsersLocationWithFilters(c *gin.Context){
 	var positions []model.Position
+	var user model.User
 	var data struct {
 		UsersId []int `gorm:"not null" json:"UserId"`
 		Dates []string `gorm:"not null" json:"Dates"`
@@ -137,31 +137,49 @@ func GetUsersLocationWithFilters(c *gin.Context){
 
 	fmt.Println(data)
 
-	services.OpenDatabase()
+	// Verificar se os dados foram enviados corretamente, na data posso só receber uma data(pesquisar só em um dia) ou um intervalor de datas
+	if len(data.Dates) == 1 {
+		var _, errStart = ValidateDate(data.Dates[0])
+		if errStart != nil{
+			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid date!"})
+			return
+		}
+	}else if len(data.Dates) == 2{
+		var _, errStart = ValidateDate(data.Dates[0])
+		var _, errEnd = ValidateDate(data.Dates[0])
+		if errStart != nil || errEnd != nil{
+			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid date!"})
+			return
+		}
+	}
 
-	// VERIFICAR SE FORAM ENVIADOS FILTROS E SE FORAM VERIFICAR SE POR EXEMPLO A STRING DATA CORRESPONDE MESMO A UMA DATA
-
-	//
+	// Verificar se os users existem na bd
+	for i := 0; i < len(data.UsersId); i++ {	
+		services.Db.Find(&user, data.UsersId[i])
+		if user.ID == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid user!"})
+			return
+		}
+	}
+	
 	// QUERY
 	fmt.Println(GenerateQuery(data.UsersId,data.Dates))
-	// services.Db.Exec(GenerateQuery(data.UsersId,data.Dates))
-	if positions := services.Db.Exec(GenerateQuery(data.UsersId,data.Dates)).Error; positions != nil {
-		log.Println("ERROR updating the Position")
-		return 
+	services.Db.Raw(GenerateQuery(data.UsersId,data.Dates)).Scan(&positions)
+
+	if len(positions) == 0{
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "None found!"})
+		return
 	}
-	fmt.Println(positions)
+
 	fmt.Println(services.Db.Exec("select * from positions"))
-	return;
-	// c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "My Locations History Filtered", "locations": positions})
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Users Locations", "locations": positions})
 }
 
 func GenerateQuery(users_id[] int, date[]string) string {
-	fmt.Println(len(users_id))
 	where := "where 1 = 1"
 	for i := 0; i < len(users_id); i++ {	
 		where += " AND user_id = " + strconv.Itoa(users_id[i]) + ""
 	}
-	fmt.Println(len(date))
 	if len(date) == 1{
 		where += " AND created_at ='" + date[0] + "'"
 	}else if len(date) == 2{
