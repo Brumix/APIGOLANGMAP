@@ -8,6 +8,8 @@ import (
 
 const UserAccess = 1
 const AdminAccess = -1
+const minAlertTime = 1
+const maxAlertTime = 48
 
 type User struct {
 	gorm.Model    `swaggerignore:"true"`
@@ -29,3 +31,5 @@ func (user User) IsAdmin() bool {
 		panic("User " + user.Username + " has invalid access mode " + strconv.Itoa(user.AccessMode))
 	}
 }
+
+func (user User) InvalidAlertTime() bool { return user.AlertTime < minAlertTime || user.AlertTime > maxAlertTime }

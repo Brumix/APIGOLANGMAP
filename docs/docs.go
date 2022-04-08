@@ -211,6 +211,9 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not found"
+                    },
+                    "406": {
+                        "description": "Not acceptable"
                     }
                 }
             },
@@ -616,7 +619,7 @@ const docTemplate = `{
 		"model.Alert": {
             "type": "object",
             "properties": {
-                "AlertTime": {
+                "alertTime": {
                     "type": "integer"
                 },
             }

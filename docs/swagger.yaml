@@ -378,6 +378,8 @@ paths:
           description: Bad request
         "404":
           description: Not found
+        "406":
+          description: Not acceptable
       security:
         - BearerAuth: [ ]
       summary: Atualiza a periodicidade de alerta

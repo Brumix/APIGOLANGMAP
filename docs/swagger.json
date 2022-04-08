@@ -515,6 +515,9 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "406": {
+            "description": "Not acceptable"
           }
         }
       }

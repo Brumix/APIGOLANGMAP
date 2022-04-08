@@ -18,6 +18,7 @@ import (
 // @Success 200 {object} model.User
 // @Failure 400 "Bad request"
 // @Failure 404 "Not found"
+// @Failure 406 "Not acceptable"
 // @Failure 401 "Unauthorized"
 func UpdateAlertTime(c *gin.Context) {
 	controllers.UpdateAlertTime(c)

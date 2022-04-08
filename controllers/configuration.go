@@ -24,6 +24,11 @@ func UpdateAlertTime(c *gin.Context) {
 		return
 	}
 
+	if user.InvalidAlertTime() {
+		c.JSON(http.StatusNotAcceptable, gin.H{"status": http.StatusNotAcceptable, "message": "Alert time is not acceptable!"})
+		return
+	}
+
 	result := services.Db.Save(user)
 
 	if result.RowsAffected != 0 {
