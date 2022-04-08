@@ -48,7 +48,6 @@ func securityConcurrent() {
 }
 
 func alertUser(user uint) {
-	fmt.Println(user)
 	var followers []model.Follower
 	Db.Where("user_id = ?", user).Find(&followers)
 	msg := fmt.Sprintf("Alert User %d maybe in Danger", user)
