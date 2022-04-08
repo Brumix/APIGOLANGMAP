@@ -27,9 +27,7 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
 		return
 	}
-	services.OpenDatabase()
 	services.Db.Find(&usr, "username = ?", creds.Username)
-	services.CloseDatabase()
 	if usr.Username == "" || !CheckPasswordHash(creds.Password, usr.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Invalid User!"})
 		return
@@ -51,12 +49,10 @@ func RegisterHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
 		return
 	}
-	services.OpenDatabase()
 	hash, _ := HashPassword(creds.Password)
 
 	creds.Password = hash
 	result := services.Db.Save(&creds)
-	services.CloseDatabase()
 	if result.RowsAffected != 0 {
 		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!", "User ID": creds.ID})
 		return

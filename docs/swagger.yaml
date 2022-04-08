@@ -1,20 +1,46 @@
 definitions:
   model.Claims:
     properties:
+      access_mode:
+        type: integer
+      userid:
+        type: integer
       username:
         type: string
     type: object
-  model.Evaluation:
+  model.Follower:
     properties:
-      Note:
-        type: string
-      Rating:
+      FollowerUserID:
         type: integer
+      UserID:
+        type: integer
+    type: object
+  model.Position:
+    properties:
+      Latitude:
+        type: number
+      Longitude:
+        type: number
+      UserId:
+        type: integer
+    required:
+    - Latitude
+    - Longitude
     type: object
   model.User:
     properties:
+      access_mode:
+        type: integer
       password:
         type: string
+      userFriends:
+        items:
+          $ref: '#/definitions/model.Follower'
+        type: array
+      userPositions:
+        items:
+          $ref: '#/definitions/model.Position'
+        type: array
       username:
         type: string
     type: object
@@ -24,22 +50,22 @@ definitions:
         type: integer
     type: object
 info:
-  contact: { }
+  contact: {}
 paths:
   /auth/login:
     post:
       consumes:
-        - application/json
+      - application/json
       description: Autentica o utilizador e gera o token para os próximos acessos
       parameters:
-        - description: Do login
-          in: body
-          name: evaluation
-          required: true
-          schema:
-            $ref: '#/definitions/model.User'
+      - description: Do login
+        in: body
+        name: evaluation
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -50,19 +76,44 @@ paths:
         "401":
           description: Unauthorized
       summary: Realizar autenticação
+  /auth/logout:
+    put:
+      consumes:
+      - application/json
+      description: Desautentica o utilizador invalidando o token atual
+      parameters:
+      - description: Do logout
+        in: body
+        name: evaluation
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: bool
+        "406":
+          description: Cannot log out
+      summary: Realizar desautenticação
   /auth/refresh_token:
     put:
       consumes:
-        - application/json
-      description: Atualiza o token de autenticação do usuário
+      - application/json
+      description: Atualiza o token de autenticação do usuário invalidando o antigo
       parameters:
-        - description: Token
-          in: header
-          name: Authorization
-          required: true
-          type: string
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -72,47 +123,26 @@ paths:
           description: Bad request
         "401":
           description: Unauthorized
+        "406":
+          description: Cannot invalidate old token
       summary: Atualiza token de autenticação
-  /auth/logout:
-    post:
-      consumes:
-        - application/json
-      description: Invalida o token de autenticação do usuário
-      parameters:
-        - description: Token
-          in: header
-          name: Authorization
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Claims'
-        "400":
-          description: Bad request
-        "401":
-          description: Unauthorized
-      summary: Invalida token de autenticação
   /auth/register:
     post:
       consumes:
-        - application/json
+      - application/json
       description: Regista um utilizador
       parameters:
-        - description: Do register
-          in: body
-          name: evaluation
-          required: true
-          schema:
-            $ref: '#/definitions/model.User'
+      - description: Do register
+        in: body
+        name: evaluation
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
       produces:
-        - application/json
+      - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/model.Claims'
         "400":
@@ -120,90 +150,157 @@ paths:
         "401":
           description: Unauthorized
       summary: Realizar registro
-  /echo:
+  /follower:
     get:
       consumes:
-        - application/json
-      description: Echo the data sent though the get request.
+      - application/json
+      description: Exibe a lista, sem todos os campos, de todos os followers
       parameters:
-        - description: string valid
-          in: query
-          maxLength: 10
-          minLength: 5
-          name: name
-          type: string
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Evaluation'
-            type: array
-        "404":
-          description: Not found
-      summary: Echo the data sent on get
-  /evaluation:
-    get:
-      consumes:
-        - application/json
-      description: Exibe a lista, sem todos os campos, de todas as avaliações
-      parameters:
-        - description: Token
-          in: header
-          name: Authorization
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.Evaluation'
+              $ref: '#/definitions/model.Follower'
             type: array
         "404":
           description: Not found
       security:
+      - BearerAuth: []
+      summary: Obtem os Followers
+  /follower/assoc:
+    post:
+      consumes:
+      - application/json
+      description: Associa um Follower a um User
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Associate User as Follower
+        in: body
+        name: follower
+        required: true
+        schema:
+          $ref: '#/definitions/model.Follower'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Follower'
+            type: array
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Associa um Follower(User) a um User
+  /follower/deassoc:
+    post:
+      consumes:
+      - application/json
+      description: Desassocia um Follower de um User
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Deassociate Follower from User
+        in: body
+        name: follower
+        required: true
+        schema:
+          $ref: '#/definitions/model.Follower'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Follower'
+            type: array
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Desassocia um Follower(User) de um User
+  /position:
+    get:
+      consumes:
+      - application/json
+      description: Exibe a lista da última localização do utilizador
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Position'
+        "400":
+          description: User Token Malformed
+        "404":
+          description: User Not found
+      security:
         - BearerAuth: [ ]
-      summary: Recupera as avaliações
+      summary: Obter a última localização do utilizador
     post:
       consumes:
         - application/json
-      description: Cria uma avaliação sobre a utilização da aplicação
+      description: Cria uma localizacao de um utilizador em especifico
       parameters:
         - description: Token
           in: header
           name: Authorization
           required: true
           type: string
-        - description: Add evaluation
+        - description: Add Location
           in: body
           name: evaluation
           required: true
           schema:
-            $ref: '#/definitions/model.Evaluation'
+            $ref: '#/definitions/model.Position'
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/model.Evaluation'
+            $ref: '#/definitions/model.Position'
         "400":
           description: Bad request
         "404":
           description: Not found
       security:
         - BearerAuth: [ ]
-      summary: Adicionar uma avaliação
-  /evaluation/{id}:
+      summary: Adicionar uma localizaçao
+  /position/{id}:
     delete:
       consumes:
         - application/json
-      description: Exclui uma avaliação realizada
+      description: Exclui uma localização selecionada
       operationId: get-string-by-int
       parameters:
         - description: Token
@@ -211,7 +308,7 @@ paths:
           name: Authorization
           required: true
           type: string
-        - description: Evaluation ID
+        - description: Position ID
           in: path
           name: id
           required: true
@@ -220,78 +317,39 @@ paths:
         - application/json
       responses:
         "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Evaluation'
+          description: Delete succeeded!
         "404":
-          description: Not found
+          description: None found!
       security:
         - BearerAuth: [ ]
-      summary: Exclui uma avaliação pelo ID
+      summary: Exclui uma localização
+  /position/history:
     get:
       consumes:
         - application/json
-      description: Exibe os detalhes de uma avaliação pelo ID
-      operationId: get-evaluation-by-int
+      description: Exibe a lista de todas as localizações do utilizador
       parameters:
         - description: Token
           in: header
           name: Authorization
           required: true
           type: string
-        - description: Evaluation ID
-          in: path
-          name: id
-          required: true
-          type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Evaluation'
-        "404":
-          description: Not found
-      security:
-        - BearerAuth: [ ]
-      summary: Recupera uma avaliação pelo id
-    put:
-      consumes:
-        - application/json
-      description: Atualiza uma avaliação sobre a utilização da aplicação
-      parameters:
-        - description: Token
-          in: header
-          name: Authorization
-          required: true
-          type: string
-        - description: Udpdate evaluation
-          in: body
-          name: evaluation
-          required: true
-          schema:
-            $ref: '#/definitions/model.Evaluation'
-        - description: Evaluation ID
-          in: path
-          name: id
-          required: true
-          type: integer
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Evaluation'
+            items:
+              $ref: '#/definitions/model.Position'
+            type: array
         "400":
-          description: Bad request
+          description: User Token Malformed
         "404":
-          description: Not found
+          description: User Not found
       security:
         - BearerAuth: [ ]
-      summary: Atualiza uma avaliação
-
+      summary: Obtem todas as localizações do utilizador
   /alert/time:
     put:
       consumes:
@@ -309,7 +367,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/model.Alert'
-
       produces:
         - application/json
       responses:
@@ -324,4 +381,28 @@ paths:
       security:
         - BearerAuth: [ ]
       summary: Atualiza a periodicidade de alerta
+  /socket:
+    get:
+      consumes:
+        - application/json
+      description: Inicia todos os recursos necessario para a criação de uma webSocket
+        com o cliente
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Connection confirm
+        "400":
+          description: User Token Malformed
+        "404":
+          description: Connection failed
+      security:
+        - BearerAuth: [ ]
+      summary: Iniciar conecção com a webSocket
 swagger: "2.0"

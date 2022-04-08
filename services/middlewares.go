@@ -31,9 +31,9 @@ func AuthorizationRequired(adminAccess bool) gin.HandlerFunc {
 				c.Set("userid", claims.UserID)
 				c.Set("username", claims.Username)
 			}
-			OpenDatabase()
+			//OpenDatabase()
 
-			defer CloseDatabase()
+			//defer CloseDatabase()
 			// before request
 			c.Next()
 		}

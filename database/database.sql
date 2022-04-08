@@ -1,2 +1,6 @@
 CREATE
 DATABASE apidb;
+\c apidb
+CREATE
+EXTENSION IF NOT EXISTS postgis;
+
