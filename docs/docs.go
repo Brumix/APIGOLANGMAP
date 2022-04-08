@@ -54,7 +54,7 @@ const docTemplate = `{
             }
         },
         "/auth/logout": {
-            "put": {
+            "post": {
                 "description": "Desautentica o utilizador invalidando o token atual",
                 "consumes": [
                     "application/json"

@@ -77,7 +77,7 @@ paths:
           description: Unauthorized
       summary: Realizar autenticação
   /auth/logout:
-    put:
+    post:
       consumes:
       - application/json
       description: Desautentica o utilizador invalidando o token atual
