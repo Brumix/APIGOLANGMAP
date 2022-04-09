@@ -13,9 +13,6 @@ import (
 
 var identityKey = "id"
 
-const UserAccess = false
-const AdminAccess = true
-
 func init() {
 	services.OpenDatabase()
 	services.Db.AutoMigrate(&model.User{})
@@ -45,7 +42,7 @@ func main() {
 	})
 
 	follower := router.Group("/api/v1/follower")
-	follower.Use(services.AuthorizationRequired(UserAccess))
+	follower.Use(services.AuthorizationRequired())
 	{
 		follower.GET("/", routes.GetAllFollowers)
 		follower.POST("/assoc", routes.AssociateFollower)
@@ -53,7 +50,7 @@ func main() {
 	}
 
 	alertTime := router.Group("/api/v1/alert")
-	alertTime.Use(services.AuthorizationRequired(UserAccess))
+	alertTime.Use(services.AuthorizationRequired())
 	{
 		alertTime.PUT("/time/", routes.UpdateAlertTime)
 
@@ -62,13 +59,13 @@ func main() {
 	auth := router.Group("/api/v1/auth")
 	{
 		auth.POST("/login", routes.GenerateToken)
-		auth.POST("/logout", services.AuthorizationRequired(UserAccess), routes.InvalidateToken)
+		auth.POST("/logout", services.AuthorizationRequired(), routes.InvalidateToken)
 		auth.POST("/register", routes.RegisterUser)
-		auth.PUT("/refresh_token", services.AuthorizationRequired(UserAccess), routes.RefreshToken)
+		auth.PUT("/refresh_token", services.AuthorizationRequired(), routes.RefreshToken)
 	}
 
 	position := router.Group("/api/v1/position")
-	position.Use(services.AuthorizationRequired(UserAccess))
+	position.Use(services.AuthorizationRequired())
 	{
 		position.POST("/", routes.RegisterLocation)
 		position.GET("/", routes.GetMyLocation)
