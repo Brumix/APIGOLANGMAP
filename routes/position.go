@@ -58,6 +58,16 @@ func DeleteLocation(c *gin.Context) {
 	controllers.DeleteLocation(c)
 }
 
+// @Summary Obtem todas as localizações dos utilizadores com filtros
+// @Description Exibe a lista de localizações dos utilizadores 
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @param Authorization header string true "Token"
+// @Success 200 {array} model.Position
+// @Router /position/filter [post]
+// @Failure 404 "Location Not found"
+// @Failure 400 "User Token Malformed"
 func GetUsersLocationWithFilters(c *gin.Context){
 	controllers.GetUsersLocationWithFilters(c)
 }

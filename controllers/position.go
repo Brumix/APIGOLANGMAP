@@ -4,9 +4,7 @@ import (
 	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/services"
-	"fmt"
 	"strconv"
-
 	"net/http"
 	"time"
 
@@ -135,22 +133,23 @@ func GetUsersLocationWithFilters(c *gin.Context){
 		return
 	}
 
-	fmt.Println(data)
-
 	// Verificar se os dados foram enviados corretamente, na data posso só receber uma data(pesquisar só em um dia) ou um intervalor de datas
 	if len(data.Dates) == 1 {
-		var _, errStart = ValidateDate(data.Dates[0])
+		var startDate, errStart = ValidateDate(data.Dates[0])
 		if errStart != nil{
 			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid date!"})
 			return
 		}
+		data.Dates[0] = startDate.Format("2006-01-02 15:04:05")
 	}else if len(data.Dates) == 2{
-		var _, errStart = ValidateDate(data.Dates[0])
-		var _, errEnd = ValidateDate(data.Dates[0])
+		var startDate, errStart = ValidateDate(data.Dates[0])
+		var endDate, errEnd = ValidateDate(data.Dates[1])
 		if errStart != nil || errEnd != nil{
 			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid date!"})
 			return
 		}
+		data.Dates[0] = startDate.Format("2006-01-02 15:04:05")
+		data.Dates[1] = endDate.Format("2006-01-02 15:04:05")
 	}
 
 	// Verificar se os users existem na bd
@@ -163,7 +162,6 @@ func GetUsersLocationWithFilters(c *gin.Context){
 	}
 	
 	// QUERY
-	fmt.Println(GenerateQuery(data.UsersId,data.Dates))
 	services.Db.Raw(GenerateQuery(data.UsersId,data.Dates)).Scan(&positions)
 
 	if len(positions) == 0{
@@ -171,7 +169,6 @@ func GetUsersLocationWithFilters(c *gin.Context){
 		return
 	}
 
-	fmt.Println(services.Db.Exec("select * from positions"))
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Users Locations", "locations": positions})
 }
 
@@ -181,10 +178,10 @@ func GenerateQuery(users_id[] int, date[]string) string {
 		where += " AND user_id = " + strconv.Itoa(users_id[i]) + ""
 	}
 	if len(date) == 1{
-		where += " AND created_at ='" + date[0] + "'"
+		where += " AND created_at >='" + date[0] + "' AND created_at <'" + date[0] + "'::date + '1 day'::interval"
 	}else if len(date) == 2{
 		where += " AND created_at >='" + date[0] + "'"
-		where += " AND created_at <='" + date[1] + "'"
+		where += " AND created_at <='" + date[1] + "'::date + '1 day'::interval"
 	}
 
 	return "select * from positions " + where

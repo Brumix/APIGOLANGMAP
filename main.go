@@ -68,7 +68,7 @@ func main() {
 		position.GET("/", routes.GetMyLocation)
 		position.POST("/history", routes.GetLocationHistory)
 		position.DELETE("/", routes.DeleteLocation)
-		position.POST("/locationWithFilter", routes.GetUsersLocationWithFilters)
+		position.POST("/filter", routes.GetUsersLocationWithFilters)
 
 	}
 
