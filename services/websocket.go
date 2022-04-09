@@ -16,11 +16,11 @@ var upgrader = websocket.Upgrader{
 var clients = make(map[uint]*websocket.Conn)
 
 func InitConnectionSocket(c *gin.Context) {
-	//idUser, _ := c.Get("userid")
+	idUser, _ := c.Get("userid")
 	upgrader.CheckOrigin = func(r *http.Request) bool {
-		//if idUser == nil {
-		//	return false
-		//}
+		if idUser == nil {
+			return false
+		}
 		return true
 	}
 	// upgrade this connection to a WebSocket
@@ -30,12 +30,10 @@ func InitConnectionSocket(c *gin.Context) {
 		log.Println(err)
 	}
 	// helpful log statement to show connections
-	log.Println("Client Connected")
 
 	//clients[idUser.(uint)] = ws
-	clients[0] = ws
 
-	go reader(ws)
+	reader(ws)
 }
 
 // define a reader which will listen for
@@ -56,11 +54,13 @@ func reader(conn *websocket.Conn) {
 
 func sender(idClient uint, message string) {
 	if _, exits := clients[idClient]; !exits {
-		log.Println("THAT CLIENT DON`T EXIST")
+		fmt.Printf("THE CLIENT %d DON`T EXIST \n", idClient)
 		return
 	}
 	err := clients[idClient].WriteMessage(websocket.TextMessage, []byte(message))
+	fmt.Println()
 	if err != nil {
-		log.Fatalf("[WEBSOCKET] SEND A MESSAGE -> %v", err)
+		delete(clients, idClient)
+		log.Printf("[WEBSOCKET] SEND A MESSAGE -> %v \n", err)
 	}
 }
