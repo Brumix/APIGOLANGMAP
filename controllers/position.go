@@ -115,7 +115,7 @@ func DeleteLocation(c *gin.Context) {
 		return
 	}
 
-	services.Db.Delete(&position)
+	services.Db.Unscoped().Delete(&position)
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Delete succeeded!"})
 	return
 }

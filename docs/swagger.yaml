@@ -44,6 +44,11 @@ definitions:
       username:
         type: string
     type: object
+  model.Alert:
+    properties:
+      alertTime:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -72,7 +77,7 @@ paths:
           description: Unauthorized
       summary: Realizar autenticação
   /auth/logout:
-    put:
+    post:
       consumes:
       - application/json
       description: Desautentica o utilizador invalidando o token atual
@@ -259,19 +264,76 @@ paths:
         "404":
           description: User Not found
       security:
-      - BearerAuth: []
+        - BearerAuth: [ ]
       summary: Obter a última localização do utilizador
+    post:
+      consumes:
+        - application/json
+      description: Cria uma localizacao de um utilizador em especifico
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Add Location
+          in: body
+          name: evaluation
+          required: true
+          schema:
+            $ref: '#/definitions/model.Position'
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Position'
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+      security:
+        - BearerAuth: [ ]
+      summary: Adicionar uma localizaçao
+  /position/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Exclui uma localização selecionada
+      operationId: get-string-by-int
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Position ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Delete succeeded!
+        "404":
+          description: None found!
+      security:
+        - BearerAuth: [ ]
+      summary: Exclui uma localização
   /position/history:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Exibe a lista de todas as localizações do utilizador
       parameters:
-      - description: Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
       - application/json
       responses:
@@ -286,6 +348,63 @@ paths:
         "404":
           description: User Not found
       security:
-      - BearerAuth: []
+        - BearerAuth: [ ]
       summary: Obtem todas as localizações do utilizador
+  /alert/time:
+    put:
+      consumes:
+        - application/json
+      description: Atualiza a periodicidade de alerta
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Update Alert Time
+          in: body
+          name: alertTime
+          required: true
+          schema:
+            $ref: '#/definitions/model.Alert'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Alert'
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "406":
+          description: Not acceptable
+      security:
+        - BearerAuth: [ ]
+      summary: Atualiza a periodicidade de alerta
+  /socket:
+    get:
+      consumes:
+        - application/json
+      description: Inicia todos os recursos necessario para a criação de uma webSocket
+        com o cliente
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Connection confirm
+        "400":
+          description: User Token Malformed
+        "404":
+          description: Connection failed
+      security:
+        - BearerAuth: [ ]
+      summary: Iniciar conecção com a webSocket
 swagger: "2.0"

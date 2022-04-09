@@ -7,22 +7,18 @@ import (
 	"net/http"
 )
 
-func FetchAllFollowers(userID uint) []model.Follower {
-	var followers []model.Follower
-	services.Db.Where("user_id = ?", userID).Find(&followers)
+type UserFollower struct {
+	Id         uint   `json:"id"`
+	Username   string `json:"username" gorm:"unique"`
+	Created_at string `json:"created_at"`
+	Updated_at string `json:"updated_at"`
+}
 
-	// Get Follower Users Info
-	//var user model.User
-	//services.Db.First(&user, userID)
-	//fmt.Println(">>> ", user.UserFriends)
+func FetchAllFollowers(userID uint) []UserFollower {
+	var users []UserFollower
+	services.Db.Table("users").Select("users.id, users.username, followers.created_at, followers.updated_at").Joins("JOIN followers on followers.follower_user_id = users.id").Where("followers.user_id = ?", userID).Find(&users)
 
-	//var users []model.User
-	//for _, ar := range followers {
-	//	services.Db.Where("id = ?", ar.FollowerUserID).Find(&users)
-	//}
-	//fmt.Println(">>> ", users)
-
-	return followers
+	return users
 }
 
 func GetAllFollowers(c *gin.Context) {

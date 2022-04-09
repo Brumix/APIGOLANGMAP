@@ -1,456 +1,642 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "contact": {}
-    },
-    "paths": {
-        "/auth/login": {
-            "post": {
-                "description": "Autentica o utilizador e gera o token para os próximos acessos",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Realizar autenticação",
-                "parameters": [
-                    {
-                        "description": "Do login",
-                        "name": "evaluation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Claims"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                }
+  "swagger": "2.0",
+  "info": {
+    "contact": {}
+  },
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "description": "Autentica o utilizador e gera o token para os próximos acessos",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Realizar autenticação",
+        "parameters": [
+          {
+            "description": "Do login",
+            "name": "evaluation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.User"
             }
-        },
-        "/auth/logout": {
-            "put": {
-                "description": "Desautentica o utilizador invalidando o token atual",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Realizar desautenticação",
-                "parameters": [
-                    {
-                        "description": "Do logout",
-                        "name": "evaluation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "bool"
-                    },
-                    "406": {
-                        "description": "Cannot log out"
-                    }
-                }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/model.Claims"
             }
-        },
-        "/auth/refresh_token": {
-            "put": {
-                "description": "Atualiza o token de autenticação do usuário invalidando o antigo",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Atualiza token de autenticação",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Claims"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "406": {
-                        "description": "Cannot invalidate old token"
-                    }
-                }
-            }
-        },
-        "/auth/register": {
-            "post": {
-                "description": "Regista um utilizador",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Realizar registro",
-                "parameters": [
-                    {
-                        "description": "Do register",
-                        "name": "evaluation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/model.Claims"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                }
-            }
-        },
-        "/follower": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Exibe a lista, sem todos os campos, de todos os followers",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Obtem os Followers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Follower"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            }
-        },
-        "/follower/assoc": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Associa um Follower a um User",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Associa um Follower(User) a um User",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "Associate User as Follower",
-                        "name": "follower",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Follower"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Follower"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            }
-        },
-        "/follower/deassoc": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Desassocia um Follower de um User",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Desassocia um Follower(User) de um User",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "Deassociate Follower from User",
-                        "name": "follower",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Follower"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Follower"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            }
-        },
-        "/position": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Exibe a lista da última localização do utilizador",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Obter a última localização do utilizador",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Position"
-                        }
-                    },
-                    "400": {
-                        "description": "User Token Malformed"
-                    },
-                    "404": {
-                        "description": "User Not found"
-                    }
-                }
-            }
-        },
-        "/position/history": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Exibe a lista de todas as localizações do utilizador",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Obtem todas as localizações do utilizador",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Position"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "User Token Malformed"
-                    },
-                    "404": {
-                        "description": "User Not found"
-                    }
-                }
-            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
         }
+      }
     },
-    "definitions": {
-        "model.Claims": {
-            "type": "object",
-            "properties": {
-                "access_mode": {
-                    "type": "integer"
-                },
-                "userid": {
-                    "type": "integer"
-                },
-                "username": {
-                    "type": "string"
-                }
+    "/auth/logout": {
+      "post": {
+        "description": "Desautentica o utilizador invalidando o token atual",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Realizar desautenticação",
+        "parameters": [
+          {
+            "description": "Do logout",
+            "name": "evaluation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.User"
             }
-        },
-        "model.Follower": {
-            "type": "object",
-            "properties": {
-                "FollowerUserID": {
-                    "type": "integer"
-                },
-                "UserID": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.Position": {
-            "type": "object",
-            "required": [
-                "Latitude",
-                "Longitude"
-            ],
-            "properties": {
-                "Latitude": {
-                    "type": "number"
-                },
-                "Longitude": {
-                    "type": "number"
-                },
-                "UserId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.User": {
-            "type": "object",
-            "properties": {
-                "access_mode": {
-                    "type": "integer"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "userFriends": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Follower"
-                    }
-                },
-                "userPositions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Position"
-                    }
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
+          },
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "bool"
+          },
+          "406": {
+            "description": "Cannot log out"
+          }
         }
+      }
+    },
+    "/auth/refresh_token": {
+      "put": {
+        "description": "Atualiza o token de autenticação do usuário invalidando o antigo",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Atualiza token de autenticação",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/model.Claims"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "406": {
+            "description": "Cannot invalidate old token"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "description": "Regista um utilizador",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Realizar registro",
+        "parameters": [
+          {
+            "description": "Do register",
+            "name": "evaluation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/model.Claims"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/follower": {
+      "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Exibe a lista, sem todos os campos, de todos os followers",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Obtem os Followers",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/model.Follower"
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/follower/assoc": {
+      "post": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Associa um Follower a um User",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Associa um Follower(User) a um User",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          },
+          {
+            "description": "Associate User as Follower",
+            "name": "follower",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.Follower"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/model.Follower"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/follower/deassoc": {
+      "post": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Desassocia um Follower de um User",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Desassocia um Follower(User) de um User",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          },
+          {
+            "description": "Deassociate Follower from User",
+            "name": "follower",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.Follower"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/model.Follower"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/position": {
+      "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Exibe a lista da última localização do utilizador",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Obter a última localização do utilizador",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/model.Position"
+            }
+          },
+          "400": {
+            "description": "User Token Malformed"
+          },
+          "404": {
+            "description": "User Not found"
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Cria uma localizacao de um utilizador em especifico",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Adicionar uma localizaçao",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          },
+          {
+            "description": "Add Location",
+            "name": "evaluation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.Position"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/model.Position"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/position/history": {
+      "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Exibe a lista de todas as localizações do utilizador",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Obtem todas as localizações do utilizador",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/model.Position"
+              }
+            }
+          },
+          "400": {
+            "description": "User Token Malformed"
+          },
+          "404": {
+            "description": "User Not found"
+          }
+        }
+      }
+    },
+    "/position/{id}": {
+      "delete": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Exclui uma localização selecionada",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Exclui uma localização",
+        "operationId": "get-string-by-int",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "Position ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete succeeded!"
+          },
+          "404": {
+            "description": "None found!"
+          }
+        }
+      }
+    },
+    "/alert/time": {
+      "put": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Atualiza a periodicidade de alerta determinando o tempo máximo até dar uma pessoa como perdida",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Atualiza a periodicidade de alerta",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          },
+          {
+            "description": "Atualiza a periodicidade de alerta",
+            "name": "username",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/model.Alert"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/model.Alert"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "406": {
+            "description": "Not acceptable"
+          }
+        }
+      }
+    },
+    "/socket": {
+      "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Inicia todos os recursos necessario para a criação de uma webSocket com o cliente",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Iniciar conecção com a webSocket",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connection confirm"
+          },
+          "400": {
+            "description": "User Token Malformed"
+          },
+          "404": {
+            "description": "Connection failed"
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "model.Claims": {
+      "type": "object",
+      "properties": {
+        "access_mode": {
+          "type": "integer"
+        },
+        "userid": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "model.Follower": {
+      "type": "object",
+      "properties": {
+        "FollowerUserID": {
+          "type": "integer"
+        },
+        "UserID": {
+          "type": "integer"
+        }
+      }
+    },
+    "model.Position": {
+      "type": "object",
+      "required": [
+        "Latitude",
+        "Longitude"
+      ],
+      "properties": {
+        "Latitude": {
+          "type": "number"
+        },
+        "Longitude": {
+          "type": "number"
+        },
+        "UserId": {
+          "type": "integer"
+        }
+      }
+    },
+    "model.Alert": {
+      "type": "object",
+      "properties": {
+        "Rating": {
+          "type": "integer"
+        }
+      }
+    },
+    "model.User": {
+      "type": "object",
+      "properties": {
+        "access_mode": {
+          "type": "integer"
+        },
+        "password": {
+          "type": "string"
+        },
+        "userFriends": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/model.Follower"
+          }
+        },
+        "userPositions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/model.Position"
+          }
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }
