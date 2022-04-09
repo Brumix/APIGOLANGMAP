@@ -44,6 +44,11 @@ definitions:
       username:
         type: string
     type: object
+  model.Alert:
+    properties:
+      alertTime:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -72,7 +77,7 @@ paths:
           description: Unauthorized
       summary: Realizar autenticação
   /auth/logout:
-    put:
+    post:
       consumes:
       - application/json
       description: Desautentica o utilizador invalidando o token atual
@@ -328,7 +333,7 @@ paths:
           in: header
           name: Authorization
           required: true
-        type: string
+          type: string
       produces:
       - application/json
       responses:
@@ -345,6 +350,39 @@ paths:
       security:
         - BearerAuth: [ ]
       summary: Obtem todas as localizações do utilizador
+  /alert/time:
+    put:
+      consumes:
+        - application/json
+      description: Atualiza a periodicidade de alerta
+      parameters:
+        - description: Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Update Alert Time
+          in: body
+          name: alertTime
+          required: true
+          schema:
+            $ref: '#/definitions/model.Alert'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Alert'
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "406":
+          description: Not acceptable
+      security:
+        - BearerAuth: [ ]
+      summary: Atualiza a periodicidade de alerta
   /socket:
     get:
       consumes:

@@ -54,7 +54,7 @@ const docTemplate = `{
             }
         },
         "/auth/logout": {
-            "put": {
+            "post": {
                 "description": "Desautentica o utilizador invalidando o token atual",
                 "consumes": [
                     "application/json"
@@ -165,6 +165,58 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+		"/alert/time": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Atualiza a periodicidade de alerta determinando o tempo máximo até dar uma pessoa como perdida",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Atualiza a periodicidade de alerta",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Alert",
+                        "name": "Username",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Alert"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Alert"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "406": {
+                        "description": "Not acceptable"
+                    }
+                }
+            },
         },
         "/follower": {
             "get": {
@@ -562,6 +614,14 @@ const docTemplate = `{
                 "UserId": {
                     "type": "integer"
                 }
+            }
+        },
+		"model.Alert": {
+            "type": "object",
+            "properties": {
+                "alertTime": {
+                    "type": "integer"
+                },
             }
         },
         "model.User": {
