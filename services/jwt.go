@@ -77,7 +77,7 @@ func InvalidateTokenJWT(c *gin.Context) string {
 	return tokenString
 }
 
-func ValidateTokenJWT(c *gin.Context, admin bool) bool {
+func ValidateTokenJWT(c *gin.Context) bool {
 	token, b, done := getAuthorizationToken(c)
 	if done {
 		return b
@@ -112,7 +112,7 @@ func ValidateTokenJWT(c *gin.Context, admin bool) bool {
 		return false
 	}
 
-	return !(admin && claims.IsAdmin() != admin)
+	return true
 }
 
 func getAuthorizationToken(c *gin.Context) (string, bool, bool) {
