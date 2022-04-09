@@ -65,16 +65,25 @@ func DeleteLocation(c *gin.Context) {
 	controllers.DeleteLocation(c)
 }
 
-// @Summary Iniciar conecção com a webSocket
-// @Description Inicia todos os recursos necessario para a criação de uma webSocket com o cliente
+
+// @Summary Obtem todas as localizações dos utilizadores com filtros
+// @Description Exibe a lista de localizações dos utilizadores 
 // @Accept  json
 // @Produce  json
 // @Security BearerAuth
 // @param Authorization header string true "Token"
+// @Success 200 {array} model.Position
+// @Router /position/filter [post]
+// @Failure 404 "Location Not found"
+// @Failure 400 "User Token Malformed"
+func GetUsersLocationWithFilters(c *gin.Context){
+	controllers.GetUsersLocationWithFilters(c)
+
 // @Success 200 "Connection confirm"
 // @Router /socket [get]
 // @Failure 404 "Connection failed"
 // @Failure 400 "User Token Malformed"
 func WebSocket(c *gin.Context) {
 	services.InitConnectionSocket(c)
+  
 }
