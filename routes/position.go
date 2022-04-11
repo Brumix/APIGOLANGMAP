@@ -65,9 +65,8 @@ func DeleteLocation(c *gin.Context) {
 	controllers.DeleteLocation(c)
 }
 
-
 // @Summary Obtem todas as localizações dos utilizadores com filtros
-// @Description Exibe a lista de localizações dos utilizadores 
+// @Description Exibe a lista de localizações dos utilizadores
 // @Accept  json
 // @Produce  json
 // @Security BearerAuth
@@ -76,8 +75,9 @@ func DeleteLocation(c *gin.Context) {
 // @Router /position/filter [post]
 // @Failure 404 "Location Not found"
 // @Failure 400 "User Token Malformed"
-func GetUsersLocationWithFilters(c *gin.Context){
+func GetUsersLocationWithFilters(c *gin.Context) {
 	controllers.GetUsersLocationWithFilters(c)
+}
 
 // @Success 200 "Connection confirm"
 // @Router /socket [get]
@@ -85,5 +85,4 @@ func GetUsersLocationWithFilters(c *gin.Context){
 // @Failure 400 "User Token Malformed"
 func WebSocket(c *gin.Context) {
 	services.InitConnectionSocket(c)
-  
 }
