@@ -33,7 +33,7 @@ func GenerateToken(c *gin.Context) {
 }
 
 // @Summary Atualiza token de autenticação
-// @Description Atualiza o token de autenticação do usuário
+// @Description Atualiza o token de autenticação do usuário invalidando o antigo
 // @Accept  json
 // @Produce  json
 // @Router /auth/refresh_token [put]
@@ -41,6 +41,20 @@ func GenerateToken(c *gin.Context) {
 // @Success 200 {object} model.Claims
 // @Failure 400 "Bad request"
 // @Failure 401 "Unauthorized"
+// @Failure 406 "Cannot invalidate old token"
 func RefreshToken(c *gin.Context) {
 	controllers.RefreshHandler(c)
+}
+
+// @Summary Realizar desautenticação
+// @Description Desautentica o utilizador invalidando o token atual
+// @Accept  json
+// @Produce  json
+// @Router /auth/logout [put]
+// @Param evaluation body model.User true "Do logout"
+// @param Authorization header string true "Token"
+// @Success 200 "bool"
+// @Failure 406 "Cannot log out"
+func InvalidateToken(c *gin.Context) {
+	controllers.LogoutHandler(c)
 }
