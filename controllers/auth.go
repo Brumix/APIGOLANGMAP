@@ -84,7 +84,7 @@ func LogoutHandler(c *gin.Context) {
 	services.Db.Find(&usr, "username = ?", c.GetString("username"))
 
 	if InvalidateToken(c) {
-		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!"})
+		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Success!"})
 		return
 	}
 	c.JSON(http.StatusNotAcceptable, gin.H{"status": http.StatusNotAcceptable, "message": "Cannot be created!"})
