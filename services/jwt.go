@@ -119,6 +119,9 @@ func getAuthorizationToken(c *gin.Context) (string, bool, bool) {
 	var token string
 
 	reqToken := c.Request.Header.Get("Authorization")
+	if reqToken == "" {
+		return "", false, true
+	}
 	if strings.Contains(reqToken, "Bearer") {
 		if strings.TrimSpace(reqToken) == "" {
 			return "", false, true
