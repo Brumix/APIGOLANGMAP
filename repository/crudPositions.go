@@ -82,6 +82,8 @@ func (p *PositionStruck) GetAllUsersUnderXKms(position *model.Position) error {
 
 		distance := Distance(la_position1, lo_position1, la_position2, lo_position2)
 
+		print(distance)
+
 		//if distance <= 5000
 		//TODO Verificar qual o user e alertar de seguida para o user principal
 

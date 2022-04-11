@@ -10,12 +10,12 @@ import (
 func ActivateSOS(c *gin.Context) {
 	var user model.User
 
-	services.OpenDatabase()
-
-	if err := services.Db.First(&user, "username = ?", c.GetString("username")); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User doesnt exists!"})
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
 		return
 	}
+	services.OpenDatabase()
+	services.Db.Find(&user, "username = ?", user.Username)
 
 	activated := user.IsSOSActivated
 
@@ -35,12 +35,12 @@ func ActivateSOS(c *gin.Context) {
 func DesactivateSOS(c *gin.Context) {
 	var user model.User
 
-	services.OpenDatabase()
-
-	if err := services.Db.First(&user, "username = ?", c.GetString("username")); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User doesnt exists!"})
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
 		return
 	}
+	services.OpenDatabase()
+	services.Db.Find(&user, "username = ?", user.Username)
 
 	activated := user.IsSOSActivated
 
@@ -56,4 +56,3 @@ func DesactivateSOS(c *gin.Context) {
 	services.Db.Save(&user)
 	services.CloseDatabase()
 }
-
