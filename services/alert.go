@@ -3,65 +3,62 @@ package services
 import (
 	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/repository"
+	"fmt"
 	"github.com/go-co-op/gocron"
 	"log"
 	"time"
 )
 
-const MAXCONCURENT = 5
-
 func StartService() {
 	cron := gocron.NewScheduler(time.UTC)
-	_, err := cron.Every(1).Hour().Do(securityConcurrent)
-	if err != nil {
-		log.Println("ERROR LAUNCHING THE CRON JOB")
-	}
+	cron.Every(1).Hour().Do(securityConcurrent)
+	cron.StartAsync()
 }
 
 func securityConcurrent() {
-	var semaphoreChan = make(chan struct{}, MAXCONCURENT)
+	fmt.Println("LAUNCH!!")
+	var results = make(map[string]interface{})
 	var positions, errGetAllPositions = repository.NewCrudPositions().GetAllPositions()
-	var users, errUsers = repository.NewCrudPositions().GetAllUsers()
-	defer func() {
-		var dataBase, _ = Db.DB()
-		err := dataBase.Close()
-		if err != nil {
-			panic("Error Closing the DataBase!!")
-		}
-	}()
-
-	var setUsers = make(map[uint]struct{})
-	if errGetAllPositions != nil || errUsers != nil {
+	var users, errGetAllUsers = repository.NewCrudPositions().GetAllUsers()
+	var auxUsers = make(map[uint]model.User)
+	if errGetAllPositions != nil || errGetAllUsers != nil {
 		panic("Error service SecurityConcurrent ")
 		return
 	}
-	for _, position := range positions {
-		if _, exists := setUsers[position.UserID]; exists {
-			continue
-		}
-		setUsers[position.UserID] = struct{}{}
+	for _, user := range users {
+		auxUsers[user.ID] = user
 	}
 
-	for _, user := range users {
+	defer positions.Close()
+	for positions.Next() {
+		err := Db.ScanRows(positions, &results)
+		if err != nil {
+			log.Println("Error Scanning Row")
+			continue
+		}
+		notifyUser := results["user_id"].(int64)
+		timeLastUpdate := results["max"].(time.Time)
+		currentUser, exist := auxUsers[uint(notifyUser)]
 
-		if _, exists := setUsers[user.ID]; exists {
+		if !exist {
+			log.Println("User reject from Alert ", notifyUser)
 			continue
 		}
 
-		semaphoreChan <- struct{}{}
-		notifyUser := user
-		go func() {
-			defer func() {
-				<-semaphoreChan
-			}()
-			alertUser(notifyUser)
-
-		}()
+		if !currentUser.SOS && int(time.Now().Sub(timeLastUpdate).Hours()) < currentUser.AlertTime {
+			continue
+		}
+		fmt.Println("Notify user", notifyUser)
+		alertUser(uint(notifyUser))
 	}
 }
 
-func alertUser(user model.User) {
-	//TODO FUNCTION FRIENDS
-	sender(user.ID, "ALERT!!")
-	log.Println("ALERT!!", user.Username)
+func alertUser(user uint) {
+	var followers []model.Follower
+	Db.Where("user_id = ?", user).Find(&followers)
+	msg := fmt.Sprintf("Alert User %d maybe in Danger", user)
+	for _, follower := range followers {
+		fmt.Printf("MESSAGE SEND TO %d FROM %d \t", follower.FollowerUserID, user)
+		sender(follower.FollowerUserID, msg)
+	}
 }

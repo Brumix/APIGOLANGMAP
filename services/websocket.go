@@ -15,9 +15,14 @@ var upgrader = websocket.Upgrader{
 
 var clients = make(map[uint]*websocket.Conn)
 
-func initConnectionSocket(c *gin.Context) {
-
-	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+func InitConnectionSocket(c *gin.Context) {
+	idUser, _ := c.Get("userid")
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		if idUser == nil {
+			return false
+		}
+		return true
+	}
 	// upgrade this connection to a WebSocket
 	// connection
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -25,9 +30,8 @@ func initConnectionSocket(c *gin.Context) {
 		log.Println(err)
 	}
 	// helpful log statement to show connections
-	log.Println("Client Connected")
-	//TODO GET CLIENT ID
-	clients[0] = ws
+
+	//clients[idUser.(uint)] = ws
 
 	reader(ws)
 }
@@ -38,28 +42,25 @@ func initConnectionSocket(c *gin.Context) {
 func reader(conn *websocket.Conn) {
 	for {
 		// read in a message
-		messageType, p, err := conn.ReadMessage()
+		_, p, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
 		}
 		// print out that message for clarity
 		fmt.Println(string(p))
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
 	}
 }
 
 func sender(idClient uint, message string) {
 	if _, exits := clients[idClient]; !exits {
-		log.Println("THAT CLIENT DON`T EXIST")
+		fmt.Printf("THE CLIENT %d DON`T EXIST \n", idClient)
 		return
 	}
-	err := clients[idClient].WriteMessage(1, []byte(message))
+	err := clients[idClient].WriteMessage(websocket.TextMessage, []byte(message))
+	fmt.Println()
 	if err != nil {
-		panic("[WEBSOCKET] SEND A MESSAGE!!")
+		delete(clients, idClient)
+		log.Printf("[WEBSOCKET] SEND A MESSAGE -> %v \n", err)
 	}
 }

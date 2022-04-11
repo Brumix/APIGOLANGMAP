@@ -2,17 +2,20 @@ package repository
 
 import (
 	"APIGOLANGMAP/model"
+	"database/sql"
+	_ "github.com/lib/pq"
 	"gorm.io/gorm"
+
+	"log"
 	"math"
-	"time"
+	_ "time"
 )
 
 var DB *gorm.DB
 
 type CrudPositions interface {
 	StorePosition(position *model.Position) error
-	DeletePosition(position *model.Position) error
-	GetAllPositions() ([]model.Position, error)
+	GetAllPositions() (*sql.Rows, error)
 	GetAllUsers() ([]model.User, error)
 }
 
@@ -27,46 +30,24 @@ func GetDataBase(database *gorm.DB) {
 }
 
 func (p *PositionStruck) StorePosition(position *model.Position) error {
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(position).Error; err != nil {
-			panic("ERROR creating the Position")
-			return err
-		}
-		DB.Exec("update positions set geolocation = 'point(? ?)' where user_id=?", int(position.Longitude), int(position.Latitude), position.UserID)
-
-		return nil
-	})
-
-	return err
-}
-
-func (p *PositionStruck) DeletePosition(position *model.Position) error {
-
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Delete(position).Error; err != nil {
-			panic("ERROR Deleting the Position")
-			return err
-		}
-		return nil
-	})
-	return err
-}
-
-func (p *PositionStruck) GetAllPositions() ([]model.Position, error) {
-	var positions []model.Position
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		result := tx.Where("updated_at > ?", time.Now().Add(-(1 * time.Minute))).Find(&positions)
-		if result.Error != nil {
-			panic("ERROR GETTING the Positions")
-			return result.Error
-		}
-		return nil
-	})
-	if err != nil {
-		return []model.Position{}, err
+	if err := DB.Create(position).Error; err != nil {
+		log.Println("ERROR creating the Position")
+		return err
 	}
-	return positions, nil
 
+	if errGeoLocation := DB.Exec("UPDATE positions SET geolocation = ST_SetSRID(ST_Point(longitude,latitude),4326)::geography").Error; errGeoLocation != nil {
+		log.Println("ERROR updating the Position")
+		return errGeoLocation
+	}
+	return nil
+}
+
+func (p *PositionStruck) GetAllPositions() (*sql.Rows, error) {
+	rows, err := DB.Table("positions").Distinct("user_id, MAX(created_at)").Group("user_id").Rows()
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
 }
 
 func (p *PositionStruck) GetAllUsers() ([]model.User, error) {
@@ -90,22 +71,22 @@ func (p *PositionStruck) GetAllUsers() ([]model.User, error) {
 func (p *PositionStruck) GetAllUsersUnderXKms(position *model.Position) error {
 	var positions []model.Position
 
-
 	la_position1 := position.Latitude
 	lo_position1 := position.Longitude
 
-	positions, _ = p.GetAllPositions()
+	//positions, _ = p.GetAllPositions()
 
-	for i:=0; i<len(positions);i++{
+	for i := 0; i < len(positions); i++ {
 		la_position2 := positions[i].Latitude
 		lo_position2 := positions[i].Longitude
 
 		distance := Distance(la_position1, lo_position1, la_position2, lo_position2)
 
-		if distance <= 5000 //5000, valor assumido hipoteticamente, correspondente a 5 kms, valor a ser substituido pelo numero proveniente da rota.
-				//TODO Verificar qual o user e alertar de seguida para o user principal
+		//if distance <= 5000
+		//TODO Verificar qual o user e alertar de seguida para o user principal
 
 	}
+	return nil
 
 }
 
