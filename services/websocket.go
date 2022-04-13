@@ -31,7 +31,7 @@ func InitConnectionSocket(c *gin.Context) {
 	}
 	// helpful log statement to show connections
 
-	//clients[idUser.(uint)] = ws
+	clients[idUser.(uint)] = ws
 
 	reader(ws)
 }
