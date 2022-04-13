@@ -27,6 +27,7 @@ func init() {
 	services.StartService()
 }
 
+
 func main() {
 
 	services.FormatSwagger()
@@ -36,7 +37,8 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-
+	router.Use(services.GinMiddleware("*"))
+	
 	// AUTH
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
@@ -58,7 +60,9 @@ func main() {
 	}
 
 	auth := router.Group("/api/v1/auth")
-	{
+	
+	{	
+		
 		auth.POST("/login", routes.GenerateToken)
 		auth.POST("/logout", services.AuthorizationRequired(), routes.InvalidateToken)
 		auth.POST("/register", routes.RegisterUser)
@@ -74,10 +78,19 @@ func main() {
 
 		position.DELETE("/", routes.DeleteLocation)
 		position.POST("/filter", routes.GetUsersLocationWithFilters)
+		position.POST("/users_under_xkms", routes.GetAllUsersUnderXKms)
 
 	}
 
+	sos := router.Group("/api/v1/sos")
+	position.Use(services.AuthorizationRequired())
+	{
+		sos.POST("/activate", routes.ActivateSOS)
+		sos.POST("/desactivate", routes.DesactivateSOS)
+	}
+
 	router.GET("/socket", routes.WebSocket)
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 
