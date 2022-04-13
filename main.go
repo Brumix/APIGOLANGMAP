@@ -74,16 +74,16 @@ func main() {
 
 		position.DELETE("/", routes.DeleteLocation)
 		position.POST("/filter", routes.GetUsersLocationWithFilters)
+		position.POST("/users_under_xkms", routes.GetAllUsersUnderXKms)
 
 	}
 
 	sos := router.Group("/api/v1/sos")
+	position.Use(services.AuthorizationRequired())
 	{
 		sos.POST("/activate", routes.ActivateSOS)
 		sos.POST("/desactivate", routes.DesactivateSOS)
 	}
-
-	router.GET("/users_under_xkms/:x", routes.GetAllUsersUnderXKms)
 
 	router.GET("/socket", routes.WebSocket)
 

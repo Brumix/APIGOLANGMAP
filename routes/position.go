@@ -65,7 +65,16 @@ func DeleteLocation(c *gin.Context) {
 	controllers.DeleteLocation(c)
 }
 
-//TODO Swagger
+// @Summary Alertar utilizadores num raio de x kms
+// @Description Alerta utilizadores num raio de x kms definidos pelo utilizador
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @param Authorization header string true "Token"
+// @Success 200 {array} int
+// @Router /position/users_under_xkms [post]
+// @Failure 404 "User ID Not found"
+// @Failure 400 "User Auth Token Malformed"
 func GetAllUsersUnderXKms(c *gin.Context) {
 	controllers.GetAllUsersUnderXKms(c)
 }

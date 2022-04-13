@@ -14,7 +14,6 @@ func ActivateSOS(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
 		return
 	}
-	services.OpenDatabase()
 	services.Db.Find(&user, "username = ?", user.Username)
 
 	activated := user.IsSOSActivated
@@ -29,7 +28,6 @@ func ActivateSOS(c *gin.Context) {
 
 	user.IsSOSActivated = activated
 	services.Db.Save(&user)
-	services.CloseDatabase()
 }
 
 func DesactivateSOS(c *gin.Context) {
@@ -39,7 +37,6 @@ func DesactivateSOS(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
 		return
 	}
-	services.OpenDatabase()
 	services.Db.Find(&user, "username = ?", user.Username)
 
 	activated := user.IsSOSActivated
@@ -54,5 +51,4 @@ func DesactivateSOS(c *gin.Context) {
 
 	user.IsSOSActivated = activated
 	services.Db.Save(&user)
-	services.CloseDatabase()
 }
