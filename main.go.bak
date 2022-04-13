@@ -5,7 +5,7 @@ import (
 	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
-	"os"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -78,22 +78,11 @@ func main() {
 
 		position.DELETE("/", routes.DeleteLocation)
 		position.POST("/filter", routes.GetUsersLocationWithFilters)
-		position.POST("/users_under_xkms", routes.GetAllUsersUnderXKms)
 
 	}
 
-	sos := router.Group("/api/v1/sos")
-	position.Use(services.AuthorizationRequired())
-	{
-		sos.POST("/activate", routes.ActivateSOS)
-		sos.POST("/desactivate", routes.DesactivateSOS)
-	}
-
-
-	router.GET("/socket", services.AuthorizationRequired(), routes.WebSocket)
-
+	router.GET("/socket", routes.WebSocket)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	port := os.Getenv("PORT")
-	router.Run(":"+port)
+	router.Run()
 
 }
