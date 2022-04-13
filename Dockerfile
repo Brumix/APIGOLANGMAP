@@ -11,7 +11,7 @@ RUN go get -u github.com/swaggo/http-swagger
 
 
 # HOT RELOAD
-RUN go get -u github.com/githubnemo/CompileDaemon
+#RUN go get -u github.com/githubnemo/CompileDaemon
 
 
 # Set the Current Working Directory inside the container
@@ -31,13 +31,13 @@ RUN swag init
 RUN go build -o main .
 
 # Expose port 8081 to the outside world
-EXPOSE 8080
+
 
 # Run the executable DEPLOYMENT
-# CMD ["./main"]
+ CMD ["./main"]
 
 # HOT RELOAD
-ENTRYPOINT CompileDaemon -log-prefix=false -build="go build ./main.go" -command="./main"
+#ENTRYPOINT CompileDaemon -log-prefix=false -build="go build ./main.go" -command="./main"
 
 
 
