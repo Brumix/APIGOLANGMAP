@@ -6,7 +6,6 @@ import (
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -37,7 +36,6 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-	router.Use(cors.Default())
 
 	// AUTH
 	router.NoRoute(func(c *gin.Context) {
