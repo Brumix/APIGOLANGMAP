@@ -73,7 +73,7 @@ func main() {
 		position.DELETE("/:id", routes.DeleteLocation)
 	}
 
-	router.GET("/socket", routes.WebSocket)
+	router.GET("/socket", services.AuthorizationRequired(), routes.WebSocket)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 

@@ -58,7 +58,6 @@ func sender(idClient uint, message string) {
 		return
 	}
 	err := clients[idClient].WriteMessage(websocket.TextMessage, []byte(message))
-	fmt.Println()
 	if err != nil {
 		delete(clients, idClient)
 		log.Printf("[WEBSOCKET] SEND A MESSAGE -> %v \n", err)
