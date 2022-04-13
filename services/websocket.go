@@ -52,7 +52,7 @@ func reader(conn *websocket.Conn) {
 	}
 }
 
-func sender(idClient uint, message string) {
+func Sender(idClient uint, message string) {
 	if _, exits := clients[idClient]; !exits {
 		fmt.Printf("THE CLIENT %d DON`T EXIST \n", idClient)
 		return

@@ -30,9 +30,10 @@ func GenerateTokenJWT(credentials model.User) string {
 
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &model.Claims{
-		UserID:     credentials.ID,
-		Username:   credentials.Username,
-		AccessMode: credentials.AccessMode,
+		UserID:         credentials.ID,
+		Username:       credentials.Username,
+		AccessMode:     credentials.AccessMode,
+		IsSOSActivated: credentials.IsSOSActivated,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),
@@ -119,6 +120,9 @@ func getAuthorizationToken(c *gin.Context) (string, bool, bool) {
 	var token string
 
 	reqToken := c.Request.Header.Get("Authorization")
+	if reqToken == "" {
+		return "", false, true
+	}
 	if strings.Contains(reqToken, "Bearer") {
 		if strings.TrimSpace(reqToken) == "" {
 			return "", false, true
