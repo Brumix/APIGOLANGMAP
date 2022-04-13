@@ -8,6 +8,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+func GinMiddleware(allowOrigin string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", allowOrigin)
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "*") // nao podemos mandar assim, mais tarde alterar isto, nao podemos permitir tudo
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Request.Header.Del("Origin")
+
+		c.Next()
+	}
+}
+
 func AuthorizationRequired() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
