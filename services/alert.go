@@ -48,7 +48,6 @@ func securityConcurrent() {
 		if !currentUser.SOS && int(time.Now().Sub(timeLastUpdate).Hours()) < currentUser.AlertTime {
 			continue
 		}
-		fmt.Println("Notify user", notifyUser)
 		alertUser(uint(notifyUser))
 	}
 }
@@ -58,7 +57,7 @@ func alertUser(user uint) {
 	Db.Where("user_id = ?", user).Find(&followers)
 	msg := fmt.Sprintf("Alert User %d maybe in Danger", user)
 	for _, follower := range followers {
-		fmt.Printf("MESSAGE SEND TO %d FROM %d \t", follower.FollowerUserID, user)
 		Sender(follower.FollowerUserID, msg)
+
 	}
 }
