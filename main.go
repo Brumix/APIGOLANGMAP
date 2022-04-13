@@ -5,11 +5,11 @@ import (
 	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
-	"os"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "gorm.io/driver/postgres"
+	"os"
 )
 
 var identityKey = "id"
