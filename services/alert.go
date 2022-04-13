@@ -59,6 +59,6 @@ func alertUser(user uint) {
 	msg := fmt.Sprintf("Alert User %d maybe in Danger", user)
 	for _, follower := range followers {
 		fmt.Printf("MESSAGE SEND TO %d FROM %d \t", follower.FollowerUserID, user)
-		sender(follower.FollowerUserID, msg)
+		Sender(follower.FollowerUserID, msg)
 	}
 }

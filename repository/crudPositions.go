@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"gorm.io/gorm"
+
 	"log"
+	_ "time"
 )
 
 var DB *gorm.DB

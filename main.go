@@ -78,10 +78,19 @@ func main() {
 
 		position.DELETE("/", routes.DeleteLocation)
 		position.POST("/filter", routes.GetUsersLocationWithFilters)
+		position.POST("/users_under_xkms", routes.GetAllUsersUnderXKms)
 
 	}
 
+	sos := router.Group("/api/v1/sos")
+	position.Use(services.AuthorizationRequired())
+	{
+		sos.POST("/activate", routes.ActivateSOS)
+		sos.POST("/desactivate", routes.DesactivateSOS)
+	}
+
 	router.GET("/socket", routes.WebSocket)
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 
