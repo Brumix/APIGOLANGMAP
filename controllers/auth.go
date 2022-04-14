@@ -39,7 +39,7 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Access denied!"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Success!", "token": token})
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Success!", "token": token, "User": usr})
 }
 
 func RegisterHandler(c *gin.Context) {
@@ -54,7 +54,7 @@ func RegisterHandler(c *gin.Context) {
 	creds.Password = hash
 	result := services.Db.Save(&creds)
 	if result.RowsAffected != 0 {
-		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!", "User ID": creds.ID})
+		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!", "User ID": creds.ID, "Username": creds.Username})
 		return
 	}
 	c.JSON(http.StatusNotAcceptable, gin.H{"status": http.StatusNotAcceptable, "message": "Cannot be created!"})

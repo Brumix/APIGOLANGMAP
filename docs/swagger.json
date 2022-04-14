@@ -16,12 +16,12 @@
         "summary": "Realizar autenticação",
         "parameters": [
           {
-            "description": "Do login",
+            "description": "Login realizado com Username & Password",
             "name": "evaluation",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/model.User"
+              "$ref": "#/definitions/model.UserAuth"
             }
           }
         ],
@@ -50,15 +50,15 @@
         "produces": [
           "application/json"
         ],
-        "summary": "Realizar desautenticação",
+        "summary": "Logout do utilizador invalidando o token atual",
         "parameters": [
           {
-            "description": "Do logout",
-            "name": "evaluation",
+            "description": "Logout",
+            "name": "User",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/model.User"
+              "$ref": "#/definitions/model.UserAuth"
             }
           },
           {
@@ -126,15 +126,15 @@
         "produces": [
           "application/json"
         ],
-        "summary": "Realizar registro",
+        "summary": "Registar um utilizador",
         "parameters": [
           {
-            "description": "Do register",
-            "name": "evaluation",
+            "description": "Registo do utilizador campos (",
+            "name": "User",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/model.User"
+              "$ref": "#/definitions/model.UserAuth"
             }
           }
         ],
@@ -632,6 +632,17 @@
           "items": {
             "$ref": "#/definitions/model.Position"
           }
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "model.UserAuth": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
         },
         "username": {
           "type": "string"

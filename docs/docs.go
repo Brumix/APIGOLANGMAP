@@ -29,11 +29,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Do login",
-                        "name": "evaluation",
+                        "name": "User",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/model.UserOut"
                         }
                     }
                 ],
@@ -55,22 +55,22 @@ const docTemplate = `{
         },
         "/auth/logout": {
             "post": {
-                "description": "Desautentica o utilizador invalidando o token atual",
+                "description": "Logout do utilizador invalidando o token atual",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Realizar desautenticação",
+                "summary": "Logout",
                 "parameters": [
                     {
-                        "description": "Do logout",
-                        "name": "evaluation",
+                        "description": "Logout",
+                        "name": "User",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/model.UserOut"
                         }
                     },
                     {
@@ -93,7 +93,7 @@ const docTemplate = `{
         },
         "/auth/refresh_token": {
             "put": {
-                "description": "Atualiza o token de autenticação do usuário invalidando o antigo",
+                "description": "Atualiza o token de autenticação do utilizador invalidando o antigo",
                 "consumes": [
                     "application/json"
                 ],
@@ -131,22 +131,22 @@ const docTemplate = `{
         },
         "/auth/register": {
             "post": {
-                "description": "Regista um utilizador",
+                "description": "Registo do Utilizador",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Realizar registro",
+                "summary": "Registar um utilizador",
                 "parameters": [
                     {
-                        "description": "Do register",
-                        "name": "evaluation",
+                        "description": "Registar um utilizador",
+                        "name": "User",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/model.UserOut"
                         }
                     }
                 ],
@@ -621,6 +621,17 @@ const docTemplate = `{
             "properties": {
                 "alertTime": {
                     "type": "integer"
+                },
+            }
+        },
+		"model.UserOut": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+				"password": {
+                    "type": "string"
                 },
             }
         },
