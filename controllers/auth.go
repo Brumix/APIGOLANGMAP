@@ -54,7 +54,7 @@ func RegisterHandler(c *gin.Context) {
 	creds.Password = hash
 	result := services.Db.Save(&creds)
 	if result.RowsAffected != 0 {
-		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!", "User ID": creds.ID})
+		c.JSON(http.StatusCreated, gin.H{"status": http.StatusOK, "message": "Success!", "User ID": creds.ID, "Username": creds.Username})
 		return
 	}
 	c.JSON(http.StatusNotAcceptable, gin.H{"status": http.StatusNotAcceptable, "message": "Cannot be created!"})

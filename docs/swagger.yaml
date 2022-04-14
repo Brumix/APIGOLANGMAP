@@ -58,9 +58,9 @@ paths:
       - application/json
       description: Autentica o utilizador e gera o token para os próximos acessos
       parameters:
-      - description: Do login
+      - description: Autentica o utilizador e gera o token para os próximos acessos
         in: body
-        name: evaluation
+        name: User
         required: true
         schema:
           $ref: '#/definitions/model.User'
@@ -80,11 +80,11 @@ paths:
     post:
       consumes:
       - application/json
-      description: Desautentica o utilizador invalidando o token atual
+      description: Realiza o logout do utilizador invalidando o token atual
       parameters:
-      - description: Do logout
+      - description: Realiza logout
         in: body
-        name: evaluation
+        name: User
         required: true
         schema:
           $ref: '#/definitions/model.User'
@@ -132,9 +132,9 @@ paths:
       - application/json
       description: Regista um utilizador
       parameters:
-      - description: Do register
+      - description: Registo do utilizador (username e password)
         in: body
-        name: evaluation
+        name: User
         required: true
         schema:
           $ref: '#/definitions/model.User'
