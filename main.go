@@ -62,6 +62,8 @@ func main() {
 
 	{
 
+		auth.GET("/getUser", routes.GetUserFromToken)
+
 		auth.POST("/login", routes.GenerateToken)
 		auth.POST("/logout", services.AuthorizationRequired(), routes.InvalidateToken)
 		auth.POST("/register", routes.RegisterUser)
@@ -88,7 +90,9 @@ func main() {
 		sos.POST("/desactivate", routes.DesactivateSOS)
 	}
 
+
 	router.GET("/socket", routes.WebSocket)
+
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	port := os.Getenv("PORT")
