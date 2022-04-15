@@ -3,6 +3,7 @@ package controllers
 import (
 	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/services"
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -100,4 +101,32 @@ func InvalidateToken(c *gin.Context) bool {
 	}
 	result := services.Db.Save(&revoked)
 	return result.RowsAffected != 0
+}
+
+func UserFromToken(c *gin.Context) {
+
+	if !services.ValidateTokenJWT(c) {
+		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Not authorized"})
+		return
+	}
+	var JwtKey = services.GetSecretKey()
+	var tokenInput, _, _ = services.GetAuthorizationToken(c)
+	var user model.User
+	token, err := jwt.ParseWithClaims(tokenInput, &model.Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return JwtKey, nil
+	})
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Not authorized"})
+		return
+	}
+
+	if claims, ok := token.Claims.(*model.Claims); ok && token.Valid {
+		user.ID = claims.UserID
+		services.Db.Find(&user)
+		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "user": user})
+		return
+	}
+	c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid request"})
+
 }

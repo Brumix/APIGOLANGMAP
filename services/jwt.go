@@ -51,7 +51,7 @@ func GenerateTokenJWT(credentials model.User) string {
 }
 
 func InvalidateTokenJWT(c *gin.Context) string {
-	token, _, _ := getAuthorizationToken(c)
+	token, _, _ := GetAuthorizationToken(c)
 
 	claims := &model.Claims{}
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
@@ -79,7 +79,7 @@ func InvalidateTokenJWT(c *gin.Context) string {
 }
 
 func ValidateTokenJWT(c *gin.Context) bool {
-	token, b, done := getAuthorizationToken(c)
+	token, b, done := GetAuthorizationToken(c)
 	if done {
 		return b
 	}
@@ -116,7 +116,7 @@ func ValidateTokenJWT(c *gin.Context) bool {
 	return true
 }
 
-func getAuthorizationToken(c *gin.Context) (string, bool, bool) {
+func GetAuthorizationToken(c *gin.Context) (string, bool, bool) {
 	var token string
 
 	reqToken := c.Request.Header.Get("Authorization")

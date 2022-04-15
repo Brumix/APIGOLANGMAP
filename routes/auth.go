@@ -58,3 +58,16 @@ func RefreshToken(c *gin.Context) {
 func InvalidateToken(c *gin.Context) {
 	controllers.LogoutHandler(c)
 }
+
+// @Summary Get User Info from token
+// @Description retornas as informações de um dado user  atraves do seu token
+// @Accept  json
+// @Produce  json
+// @Router /auth/getUser [get]
+// @param Authorization header string true "Token"
+// @Success 200 {object} model.User
+// @Failure 400 "Bad request"
+// @Failure 401 "Unauthorized"
+func GetUserFromToken(c *gin.Context) {
+	controllers.UserFromToken(c)
+}
