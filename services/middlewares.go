@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 func GinMiddleware(allowOrigin string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", allowOrigin)
@@ -34,7 +33,7 @@ func AuthorizationRequired() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Not authorized"})
 			c.Abort()
 		} else {
-			var tokenInput, _, _ = getAuthorizationToken(c)
+			var tokenInput, _, _ = GetAuthorizationToken(c)
 			token, err := jwt.ParseWithClaims(tokenInput, &model.Claims{}, func(token *jwt.Token) (interface{}, error) {
 				return JwtKey, nil
 			})
@@ -68,7 +67,7 @@ func AdminAuthorizationRequired() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": http.StatusUnauthorized, "message": "Not authorized"})
 			c.Abort()
 		} else {
-			var tokenInput, _, _ = getAuthorizationToken(c)
+			var tokenInput, _, _ = GetAuthorizationToken(c)
 			token, err := jwt.ParseWithClaims(tokenInput, &model.Claims{}, func(token *jwt.Token) (interface{}, error) {
 				return JwtKey, nil
 			})
