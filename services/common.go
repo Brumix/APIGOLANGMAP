@@ -38,7 +38,7 @@ func OpenDatabase() {
 	//open a db connection
 	readProperties()
 	var err error
-	dsn := "host=ec2-34-197-84-74.compute-1.amazonaws.com" + " user=swodycxhmvbkih"  + " password=a6176f5134ef1c375b10da5cbee1e9028feb5f01ca8fbc6325dadfa866398fef"  + " dbname=d99mcqkoot0c1k"+ " port=5432" + "  TimeZone=Europe/Lisbon"
+	dsn := "host=ec2-23-20-224-166.compute-1.amazonaws.com" + " user=seexoayocnbllq"  + " password=63ac3376521adfcf2212e6c2b87cf2bf080996815141e88cb6cbbb1e25f41f26"  + " dbname=d1ver7vq7ef45u"+ " port=5432 " + " TimeZone=Europe/Lisbon"
 
 	//dsn := "host=" + dbHost + " user=" + username + " password=" + password + " dbname=" + dbName + " port=" + dbPort + " sslmode=disable TimeZone=Europe/Lisbon"
 	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
