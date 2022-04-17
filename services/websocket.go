@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var upgrader = websocket.Upgrader{
@@ -16,9 +17,9 @@ var upgrader = websocket.Upgrader{
 var clients = make(map[uint]*websocket.Conn)
 
 func InitConnectionSocket(c *gin.Context) {
-	idUser, _ := c.Get("userid")
+	idUser, existId := c.Params.Get("id")
 	upgrader.CheckOrigin = func(r *http.Request) bool {
-		if idUser == nil {
+		if !existId {
 			return false
 		}
 		return true
@@ -30,8 +31,12 @@ func InitConnectionSocket(c *gin.Context) {
 		log.Println(err)
 	}
 	// helpful log statement to show connections
-
-	clients[idUser.(uint)] = ws
+	userId, errCast := strconv.ParseUint(idUser, 10, 64)
+	if errCast != nil {
+		log.Println("Error making the cast!!")
+		return
+	}
+	clients[uint(userId)] = ws
 
 	reader(ws)
 }
