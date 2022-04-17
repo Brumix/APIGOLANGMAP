@@ -90,9 +90,7 @@ func main() {
 		sos.POST("/desactivate", routes.DesactivateSOS)
 	}
 
-
-	router.GET("/socket", routes.WebSocket)
-
+	router.GET("/socket/:id", routes.WebSocket)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	port := os.Getenv("PORT")
