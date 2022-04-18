@@ -16,7 +16,7 @@ type UserFollower struct {
 
 func FetchAllFollowers(userID uint) []UserFollower {
 	var users []UserFollower
-	services.Db.Table("users").Select("users.id, users.username, followers.created_at, followers.updated_at").Joins("JOIN followers on followers.follower_user_id = users.id").Where("followers.user_id = ?", userID).Find(&users)
+	services.Db.Table("users").Select("users.id, users.username, followers.created_at, followers.updated_at").Joins("JOIN followers on followers.follower_user_id = users.id").Where("followers.user_id = ? and followers.deleted_at IS NULL", userID).Find(&users)
 
 	return users
 }
