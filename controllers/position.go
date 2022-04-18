@@ -29,15 +29,14 @@ func RegisterLocation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Auth Token Malformed!"})
 		return
 	}
-	err := c.Bind(&position)
-	if err != nil {
+	if err := c.ShouldBindJSON(&position); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 		return
 
 	}
 	position.UserID = userID.(uint)
 	if errStore := repo.StorePosition(&position); errStore != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": errStore.Error()})
 		return
 	}
 
