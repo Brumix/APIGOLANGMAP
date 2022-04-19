@@ -4,7 +4,8 @@ import (
 	"APIGOLANGMAP/model"
 	"io/ioutil"
 	"strings"
-//	"time"
+
+	//	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	postgres "gorm.io/driver/postgres"
@@ -38,7 +39,7 @@ func OpenDatabase() {
 	//open a db connection
 	readProperties()
 	var err error
-	dsn := "host=ec2-23-20-224-166.compute-1.amazonaws.com" + " user=seexoayocnbllq"  + " password=63ac3376521adfcf2212e6c2b87cf2bf080996815141e88cb6cbbb1e25f41f26"  + " dbname=d1ver7vq7ef45u"+ " port=5432 " + " TimeZone=Europe/Lisbon"
+	dsn := "host=ec2-3-223-213-207.compute-1.amazonaws.com" + " user=prakstyrdtlrgx" + " password=4a31b09f5a753a66f0c4408a35edd91742349736bcc1574e909a88cf7f29fbed" + " dbname=ddqar5cpnhds0f" + " port=5432 " + " TimeZone=Europe/Lisbon"
 
 	//dsn := "host=" + dbHost + " user=" + username + " password=" + password + " dbname=" + dbName + " port=" + dbPort + " sslmode=disable TimeZone=Europe/Lisbon"
 	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
