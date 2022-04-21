@@ -276,12 +276,11 @@ func GetAllUsersUnderXKms(c *gin.Context) {
 		}
 	}
 
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Users closers than " + strconv.Itoa((int)(meters)) + " meters", "userid": users})
 	for i := range users {
-		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Users closers than 5 kms", "userid": users[i]})
 		msg := fmt.Sprintf("Alert user %d is closer to user %d", users[i], userid)
 		fmt.Printf("MESSAGE SEND TO %d FROM %d \t", users[i], userid)
 		services.Sender(uint(users[i]), msg)
-
 	}
 
 }
