@@ -3,8 +3,9 @@ package controllers
 import (
 	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/services"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func ActivateSOS(c *gin.Context) {
@@ -51,4 +52,14 @@ func DesactivateSOS(c *gin.Context) {
 
 	user.IsSOSActivated = activated
 	services.Db.Save(&user)
+}
+
+func GetAllUsers(c *gin.Context) {
+	var users []model.User
+	services.Db.Find(&users)
+	if len(users) <= 0 {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "None found!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": users})
 }

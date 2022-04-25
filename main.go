@@ -5,11 +5,12 @@ import (
 	"APIGOLANGMAP/repository"
 	"APIGOLANGMAP/routes"
 	"APIGOLANGMAP/services"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "gorm.io/driver/postgres"
-	"os"
 )
 
 var identityKey = "id"
@@ -88,6 +89,12 @@ func main() {
 	{
 		sos.POST("/activate", routes.ActivateSOS)
 		sos.POST("/desactivate", routes.DesactivateSOS)
+	}
+
+	user := router.Group("/api/v1/user")
+	user.Use(services.AuthorizationRequired())
+	{
+		user.GET("/getAll", routes.GetAllUsers)
 	}
 
 	router.GET("/socket/:id", routes.WebSocket)

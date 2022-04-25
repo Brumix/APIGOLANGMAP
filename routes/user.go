@@ -2,6 +2,7 @@ package routes
 
 import (
 	"APIGOLANGMAP/controllers"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,4 +14,8 @@ func ActivateSOS(c *gin.Context) {
 //TODO Swagger
 func DesactivateSOS(c *gin.Context) {
 	controllers.DesactivateSOS(c)
+}
+
+func GetAllUsers(c *gin.Context) {
+	controllers.GetAllUsers(c)
 }

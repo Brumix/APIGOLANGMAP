@@ -3,8 +3,9 @@ package controllers
 import (
 	"APIGOLANGMAP/model"
 	"APIGOLANGMAP/services"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
+
+	"github.com/dgrijalva/jwt-go"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
