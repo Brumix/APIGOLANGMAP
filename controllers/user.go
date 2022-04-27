@@ -11,11 +11,18 @@ import (
 func ActivateSOS(c *gin.Context) {
 	var user model.User
 
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
+	userID, errAuth := c.Get("userid")
+
+	if errAuth == false {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Auth Token Malformed!"})
 		return
 	}
-	services.Db.Find(&user, "username = ?", user.Username)
+
+	// if err := c.ShouldBindJSON(&user); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
+	// 	return
+	//}
+	services.Db.Find(&user, "id = ?", userID)
 
 	activated := user.IsSOSActivated
 
@@ -34,11 +41,19 @@ func ActivateSOS(c *gin.Context) {
 func DesactivateSOS(c *gin.Context) {
 	var user model.User
 
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
+	// if err := c.ShouldBindJSON(&user); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Bad request!"})
+	// 	return
+	// }
+
+	userID, errAuth := c.Get("userid")
+
+	if errAuth == false {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "User Auth Token Malformed!"})
 		return
 	}
-	services.Db.Find(&user, "username = ?", user.Username)
+
+	services.Db.Find(&user, "id = ?", userID)
 
 	activated := user.IsSOSActivated
 
