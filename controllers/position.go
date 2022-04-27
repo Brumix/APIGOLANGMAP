@@ -154,11 +154,14 @@ func GetUsersLocationWithFilters(c *gin.Context) {
 	}
 
 	// Verificar se os users existem na bd
-	for i := 0; i < len(data.UsersId); i++ {
-		services.Db.Find(&user, data.UsersId[i])
-		if user.ID == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid user!"})
-			return
+
+	if data.UsersId[0] != 0 {
+		for i := 0; i < len(data.UsersId); i++ {
+			services.Db.Find(&user, data.UsersId[i])
+			if user.ID == 0 {
+				c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "Invalid user!"})
+				return
+			}
 		}
 	}
 
@@ -175,8 +178,11 @@ func GetUsersLocationWithFilters(c *gin.Context) {
 
 func GenerateQuery(users_id []int, date []string) string {
 	where := "where 1 = 1"
-	for i := 0; i < len(users_id); i++ {
-		where += " AND user_id = " + strconv.Itoa(users_id[i]) + ""
+
+	if users_id[0] != 0 {
+		for i := 0; i < len(users_id); i++ {
+			where += " AND user_id = " + strconv.Itoa(users_id[i]) + ""
+		}
 	}
 	if len(date) == 1 {
 		where += " AND created_at >='" + date[0] + "' AND created_at <'" + date[0] + "'::date + '1 day'::interval"
