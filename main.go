@@ -87,7 +87,7 @@ func main() {
 	sos := router.Group("/api/v1/sos")
 	position.Use(services.AuthorizationRequired())
 	{
-		sos.POST("/activate", routes.ActivateSOS)
+		sos.GET("/activate", routes.ActivateSOS)
 		sos.POST("/desactivate", routes.DesactivateSOS)
 	}
 
